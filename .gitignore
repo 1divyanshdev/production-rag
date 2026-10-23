@@ -20,3 +20,6 @@ Thumbs.db
 
 # Generated artifacts
 sample_doc.pdf
+
+# Qdrant local storage
+qdrant_storage/
