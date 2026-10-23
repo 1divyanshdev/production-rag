@@ -25,3 +25,13 @@ class EmbeddingError(Exception):
     Sub-raises distinguish auth issues, quota exhaustion, network problems,
     and malformed responses from the embedding service.
     """
+
+
+class VectorStoreError(Exception):
+    """Raised when vector store operations fail (connectivity, schema,
+    upsert/search errors)."""
+
+
+class LLMError(Exception):
+    """Raised when LLM generation fails (auth, quota, network, malformed
+    response)."""
