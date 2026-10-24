@@ -1,395 +1,490 @@
+import { Fragment } from "react";
 import Link from "next/link";
 import Reveal from "@/components/Reveal";
-import {
-  AppMockup,
-  DedupMockup,
-  MatchFlowMockup,
-  RefusalMockup,
-  SourcesMockup,
-} from "@/components/mockups";
+import CopyCommand from "@/components/CopyCommand";
+import EvidenceDemo from "@/components/EvidenceDemo";
 import { GITHUB_URL } from "@/lib/site";
 
-const icon = (path: React.ReactNode) =>
-  function Icon() {
-    return (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {path}
-      </svg>
-    );
-  };
+const PIPELINE_STAGES = [
+  {
+    num: "01",
+    name: "Parse",
+    desc: "PyMuPDF per-page extraction with encrypted and corrupt file detection.",
+  },
+  {
+    num: "02",
+    name: "Chunk",
+    desc: "Recursive splitting with exact character offsets and full lineage kept.",
+  },
+  {
+    num: "03",
+    name: "Embed",
+    desc: "Jina AI embeddings — batched, with retries and exponential backoff.",
+  },
+  {
+    num: "04",
+    name: "Index",
+    desc: "Qdrant with hash-derived point IDs. Re-indexing is idempotent.",
+  },
+  {
+    num: "05",
+    name: "Retrieve",
+    desc: "Query → vector → top-k scored chunks, ranked by cosine similarity.",
+  },
+  {
+    num: "06",
+    name: "Generate",
+    desc: "Numbered-context prompting with [n] citations — or a refusal.",
+  },
+];
 
-const IconCheck = icon(<path d="M20 6 9 17l-5-5" />);
-const IconSpark = icon(<path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" />);
-const IconPuzzle = icon(<path d="M14 7V5a2 2 0 1 1 4 0v2h2a1 1 0 0 1 1 1v3h-2a2 2 0 1 0 0 4h2v3a1 1 0 0 1-1 1h-3v-2a2 2 0 1 0-4 0v2H7a1 1 0 0 1-1-1v-3H4a2 2 0 1 1 0-4h2V8a1 1 0 0 1 1-1h3V5" />);
-const IconCompass = icon(<><circle cx="12" cy="12" r="9" /><path d="m15.5 8.5-2 5-5 2 2-5 5-2z" /></>);
-const IconLock = icon(<><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V7a4 4 0 1 1 8 0v4" /></>);
-const IconRocket = icon(<><path d="M5 13c-1.5 1.5-2 5-2 5s3.5-.5 5-2" /><path d="M12 15l-3-3a12 12 0 0 1 8-9c1 0 2 1 2 2a12 12 0 0 1-9 8z" /><path d="M9 12H6s.3-2 1.5-3.5C9 7 11 7 11 7" /><path d="M12 15v3s2-.3 3.5-1.5C17 15 17 13 17 13" /></>);
+const FEATURES = [
+  {
+    glyph: "[n]",
+    title: "Page-level citations",
+    desc: "Every [n] marker resolves to a file, a page, and a similarity score. Answers are auditable by design.",
+  },
+  {
+    glyph: "∅",
+    title: "Honest refusals",
+    desc: "Below the confidence threshold the LLM is never called. “I don’t know” is a feature, not a failure.",
+  },
+  {
+    glyph: "#",
+    title: "Content-hash dedup",
+    desc: "SHA-256 per file and hash-derived point IDs. Re-uploading never duplicates; deleting is clean.",
+  },
+  {
+    glyph: "⇄",
+    title: "Providers by config",
+    desc: "Jina, Groq, OpenRouter — anything OpenAI-compatible. Switching a provider is an env var, not a rewrite.",
+  },
+  {
+    glyph: "≡",
+    title: "Embedded or server Qdrant",
+    desc: "Zero-infrastructure embedded mode for local development; server mode via Docker Compose for production.",
+  },
+  {
+    glyph: "✓",
+    title: "Tested offline",
+    desc: "142 deterministic tests across 9 suites, with mocked HTTP transports. No test ever calls a paid API.",
+  },
+];
+
+const COMPARE_ROWS: [string, string, string][] = [
+  [
+    "source of answers",
+    "Model memory plus whatever fits in one paste",
+    "Your whole indexed corpus, retrieved per query",
+  ],
+  [
+    "citations",
+    "Vague links, if the model bothers",
+    "Page-level [n] citations with similarity scores",
+  ],
+  [
+    "missing evidence",
+    "Confident hallucination",
+    "Refusal — the LLM is never called",
+  ],
+  [
+    "quality control",
+    "Trust it",
+    "142 offline tests · eval harness on the roadmap",
+  ],
+];
+
+/**
+ * The retrieval constellation: a grid of document chunks, a query node, and
+ * the three passages it retrieves — wired to a grounded answer. Pure SVG +
+ * CSS animations, decorative only.
+ */
+function HeroConstellation() {
+  const cols = 11;
+  const rows = 8;
+  const s = 14;
+  const gap = 10;
+  const ox = 100;
+  const oy = 44;
+  const cx = (c: number) => ox + c * (s + gap) + s / 2;
+  const cy = (r: number) => oy + r * (s + gap) + s / 2;
+  const hits: Array<[number, number]> = [
+    [2, 8],
+    [4, 6],
+    [6, 9],
+  ];
+  const answerY = oy + rows * (s + gap) + 34;
+
+  return (
+    <svg viewBox="0 0 480 400" role="img" aria-label="A query retrieving three passages from a grid of document chunks, producing a grounded answer">
+      {/* chunk grid */}
+      <g className="c-grid">
+        {Array.from({ length: rows }).map((_, r) =>
+          Array.from({ length: cols }).map((_, c) => (
+            <rect
+              key={`${r}-${c}`}
+              x={ox + c * (s + gap)}
+              y={oy + r * (s + gap)}
+              width={s}
+              height={s}
+              rx={3}
+              fill="rgba(20,23,28,0.07)"
+            />
+          ))
+        )}
+      </g>
+
+      {/* query node */}
+      <g className="c-query">
+        <circle cx={44} cy={cy(3)} r={5} fill="#1d4ed8" />
+        <text x={26} y={cy(3) + 26} fill="#8b9099">
+          query
+        </text>
+      </g>
+
+      {/* retrieval paths */}
+      {hits.map(([r, c], i) => (
+        <path
+          key={`p${i}`}
+          className={`c-path c-d${i + 1}`}
+          d={`M 52 ${cy(3)} Q ${(52 + cx(c)) / 2} ${cy(3) - 46 - i * 20} ${cx(c)} ${cy(r)}`}
+          stroke="#1d4ed8"
+          strokeOpacity={0.45}
+          strokeWidth={1.5}
+          fill="none"
+        />
+      ))}
+
+      {/* retrieved chunks */}
+      {hits.map(([r, c], i) => (
+        <g key={`h${i}`} className={`c-hit c-d${i + 3}`}>
+          <rect
+            x={ox + c * (s + gap)}
+            y={oy + r * (s + gap)}
+            width={s}
+            height={s}
+            rx={3}
+            fill="#1d4ed8"
+          />
+          <text x={cx(c) + 11} y={cy(r) - 8} fill="#1d4ed8">
+            {`[${i + 1}]`}
+          </text>
+        </g>
+      ))}
+
+      {/* evidence drops */}
+      {hits.map(([r, c], i) => (
+        <line
+          key={`d${i}`}
+          className={`c-drop c-d${i + 3}`}
+          x1={cx(c)}
+          y1={cy(r) + 10}
+          x2={cx(c)}
+          y2={answerY}
+          stroke="#1d4ed8"
+          strokeOpacity={0.3}
+          strokeWidth={1}
+          strokeDasharray="3 4"
+        />
+      ))}
+
+      {/* grounded answer */}
+      <g className="c-answer">
+        <rect
+          x={ox}
+          y={answerY}
+          width={cols * (s + gap) - gap}
+          height={40}
+          rx={10}
+          fill="#ffffff"
+          stroke="rgba(20,23,28,0.16)"
+        />
+        <text x={ox + 16} y={answerY + 25} fill="#14171c">
+          grounded answer
+        </text>
+        <text
+          x={ox + cols * (s + gap) - gap - 16}
+          y={answerY + 25}
+          textAnchor="end"
+          fill="#1d4ed8"
+        >
+          [1] [2] [3]
+        </text>
+      </g>
+    </svg>
+  );
+}
 
 export default function LandingPage() {
   return (
     <>
       {/* ================= HERO ================= */}
       <section className="hero container">
+        <div className="hero-grid">
+          <Reveal>
+            <div className="kicker-line">
+              <span className="kicker">open-source rag infrastructure</span>
+              <span className="kicker-rule" />
+            </div>
+            <h1>RAG that shows its work.</h1>
+            <p className="hero-sub">
+              Upload documents, ask questions, and get answers cited to the
+              exact page — or refused when the evidence isn’t there. A
+              transparent, testable pipeline from PDF to grounded answer.
+            </p>
+            <div className="hero-cta">
+              <Link href="/playground" className="btn btn-primary">
+                Open the playground
+              </Link>
+              <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-ghost"
+              >
+                View on GitHub
+              </a>
+            </div>
+          </Reveal>
+          <Reveal delay={200} className="hero-visual">
+            <HeroConstellation />
+          </Reveal>
+        </div>
+        <Reveal delay={140}>
+          <div className="hero-terminal">
+            <CopyCommand
+              title="quickstart"
+              lines={[
+                {
+                  cmd: "git clone https://github.com/1divyanshdev/production-rag",
+                },
+                {
+                  cmd: "cd production-rag && uv pip install -r requirements.txt",
+                },
+                {
+                  cmd: "uvicorn backend.app.main:app --reload",
+                  comment: "→ http://127.0.0.1:8000/docs",
+                },
+              ]}
+            />
+          </div>
+          <div className="hero-stats">
+            <span className="stat-chip">
+              <b>142</b> offline tests
+            </span>
+            <span className="stat-chip">
+              <b>9</b> test suites
+            </span>
+            <span className="stat-chip">
+              <b>0</b> paid APIs in CI
+            </span>
+            <span className="stat-chip">
+              <b>2</b> free-tier API keys to run
+            </span>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ================= EVIDENCE ================= */}
+      <section className="section container" id="evidence">
         <Reveal>
-          <h1>
-            Stop searching. <em>Start asking.</em>
-            <br />
-            Answers <span className="accent">with receipts.</span>
-          </h1>
+          <div className="section-head">
+            <span className="kicker">evidence</span>
+            <h2>Every claim comes with a receipt.</h2>
+            <p>
+              A chatbot answers from memory. production-rag retrieves from your
+              documents — and shows you exactly which passages it used, or
+              admits when nothing it found was good enough.
+            </p>
+          </div>
         </Reveal>
         <Reveal delay={120}>
-          <p className="hero-sub">
-            A full-stack RAG platform that reads your PDFs and answers
-            questions grounded in the retrieved context — cited to exact
-            pages, or honestly refused when the evidence isn&apos;t there.
+          <EvidenceDemo />
+          <p className="demo-caption">
+            example session · recorded values ·{" "}
+            <Link href="/playground">run it live in the playground →</Link>
           </p>
         </Reveal>
-        <Reveal delay={220}>
-          <div className="hero-cta">
-            <Link href="/ask" className="btn-primary">
-              Get Started — it&apos;s free
-            </Link>
-            <a href="#how-it-works" className="btn-white">
-              Learn More
-            </a>
-          </div>
-        </Reveal>
-        <Reveal delay={320}>
-          <div className="mockup-wrap">
-            <AppMockup />
-          </div>
-        </Reveal>
       </section>
 
-      {/* ================= WHY ================= */}
-      <section className="block container" id="why">
+      {/* ================= PIPELINE ================= */}
+      <section className="section container" id="pipeline">
         <Reveal>
           <div className="section-head">
-            <h2>Why production-rag?</h2>
-            <p>Upload a PDF. Ask anything. Get receipts.</p>
+            <span className="kicker">pipeline</span>
+            <h2>A pipeline you can actually see.</h2>
+            <p>
+              Six typed stages, each an independently tested service. No black
+              boxes between your PDF and the answer.
+            </p>
           </div>
         </Reveal>
-
-        <div className="why-grid">
-          <Reveal>
-            <div className="why-card">
-              <h3>Not links. Citations.</h3>
-              <p>
-                Chatbots give you confident paragraphs. Every claim here maps
-                to a numbered passage with filename, page, and similarity
-                score.
-              </p>
-              <div className="why-visual">
-                <MatchFlowMockup />
-              </div>
-            </div>
-          </Reveal>
-
-          <Reveal delay={120}>
-            <div className="why-card">
-              <h3>From PDF to answer in seconds.</h3>
-              <p>
-                Upload, and the pipeline takes over: parse → chunk → embed →
-                index. No manual prep, no cleanup scripts.
-              </p>
-              <div className="why-visual">
-                <div className="icon-trio">
-                  <span className="sq">
-                    <IconSpark />
-                  </span>
-                  <span className="sq">
-                    <IconPuzzle />
-                  </span>
-                  <span className="sq">
-                    <IconCompass />
-                  </span>
+        <Reveal delay={120}>
+          <div className="pipeline">
+            {PIPELINE_STAGES.map((stage, i) => (
+              <Fragment key={stage.num}>
+                <div className="pipe-stage">
+                  <div className="pipe-num">{stage.num}</div>
+                  <div className="pipe-name">{stage.name}</div>
+                  <p className="pipe-desc">{stage.desc}</p>
                 </div>
-              </div>
-            </div>
-          </Reveal>
-
-          <Reveal delay={80}>
-            <div className="why-card">
-              <h3>Everything in one place.</h3>
-              <p>
-                Manage documents, track what&apos;s indexed, delete cleanly —
-                the whole knowledge-base lifecycle without juggling tools.
-              </p>
-              <div className="why-visual">
-                <DedupMockup />
-              </div>
-            </div>
-          </Reveal>
-
-          <Reveal delay={160}>
-            <div className="why-card">
-              <h3>Honest by default.</h3>
-              <p>
-                Below a confidence threshold the LLM is never called. A refusal
-                is a feature: &ldquo;I don&apos;t know&rdquo; beats a
-                hallucination every time.
-              </p>
-              <div className="why-visual">
-                <RefusalMockup />
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ================= HOW IT WORKS ================= */}
-      <section className="block container" id="how-it-works">
-        <Reveal>
-          <div className="section-head">
-            <h2>How it works?</h2>
-            <p>From raw PDF to cited answer in three steps.</p>
+                {i < PIPELINE_STAGES.length - 1 && (
+                  <span className="pipe-arrow" aria-hidden>
+                    →
+                  </span>
+                )}
+              </Fragment>
+            ))}
           </div>
+          <p className="pipe-foot">
+            every stage sits behind an abstract interface — swap embeddings,
+            LLM, or vector store with <code>EMBEDDING_API_KEY</code>,{" "}
+            <code>LLM_BASE_URL</code>, <code>VECTOR_STORE_URL</code>
+          </p>
         </Reveal>
-        <div className="hiw-grid">
-          <Reveal>
-            <div className="hiw-card c-gray">
-              <div className="hiw-num">01</div>
-              <h3>Upload your PDFs</h3>
-              <p>
-                Drag and drop. Files are hashed, parsed page by page, and
-                duplicates are skipped automatically.
-              </p>
-            </div>
-          </Reveal>
-          <Reveal delay={120}>
-            <div className="hiw-card c-blue">
-              <div className="hiw-num">02</div>
-              <h3>We chunk &amp; embed</h3>
-              <p>
-                Recursive splitting keeps paragraphs whole. Embeddings land in
-                Qdrant with full lineage — file, page, offsets.
-              </p>
-            </div>
-          </Reveal>
-          <Reveal delay={240}>
-            <div className="hiw-card c-purple">
-              <div className="hiw-num">03</div>
-              <h3>Ask &amp; get citations</h3>
-              <p>
-                Your question retrieves the top passages; the answer cites them
-                inline as [n] — or refuses if the evidence is too weak.
-              </p>
-            </div>
-          </Reveal>
-        </div>
       </section>
 
       {/* ================= FEATURES ================= */}
-      <section className="block container" id="features">
+      <section className="section container" id="features">
         <Reveal>
           <div className="section-head">
-            <h2>Features</h2>
-            <p>What makes the answers trustworthy.</p>
+            <span className="kicker">features</span>
+            <h2>Built like infrastructure, not a demo.</h2>
+            <p>
+              The boring parts are done properly — that’s what makes the
+              answers trustworthy.
+            </p>
           </div>
         </Reveal>
-
         <div className="feature-grid">
-          <Reveal>
-            <div className="feature-card">
-              <h3>Sources you can verify</h3>
-              <p>
-                Every answer ships with its evidence: ranked sources, page
-                numbers, and cosine similarity scores you can eyeball at a
-                glance.
-              </p>
-              <SourcesMockup />
-            </div>
-          </Reveal>
-          <Reveal delay={120}>
-            <div className="feature-card">
-              <h3>Providers, swappable by config</h3>
-              <p>
-                Jina for embeddings, any OpenAI-compatible endpoint for the
-                LLM — free tiers supported. Changing providers is an env var,
-                not a rewrite.
-              </p>
-              <div className="why-visual">
-                <div className="providers-row">
-                  <span>jina-embeddings</span>
-                  <span>groq/llama</span>
-                  <span>openrouter</span>
-                  <span>qdrant</span>
-                  <span>fastapi</span>
-                  <span>next.js</span>
+          {FEATURES.map((f, i) => (
+            <Reveal key={f.title} delay={i * 70}>
+              <div className="feature-card">
+                <div className="feature-glyph" aria-hidden>
+                  {f.glyph}
                 </div>
+                <h3>{f.title}</h3>
+                <p>{f.desc}</p>
               </div>
-            </div>
-          </Reveal>
+            </Reveal>
+          ))}
         </div>
       </section>
 
-      {/* ================= USE CASES ================= */}
-      <section className="block container" id="use-cases">
+      {/* ================= DIFFERENCE ================= */}
+      <section className="section container" id="difference">
         <Reveal>
           <div className="section-head">
-            <h2>Use Cases</h2>
-            <p>Where grounded answers actually matter.</p>
+            <span className="kicker">the difference</span>
+            <h2>Why not just paste it into a chatbot?</h2>
+            <p>
+              Because a generic chatbot answers from memory and hopes you don’t
+              check. This one answers from your corpus and shows the evidence.
+            </p>
           </div>
         </Reveal>
-        <div className="usecase-grid">
-          <Reveal>
-            <div className="usecase-card">
-              <span className="blob blob-green" />
-              <span className="emoji">📚</span>
-              <div>
-                <h3>Researchers</h3>
-                <p>Interrogate papers and reports — with page-level proof.</p>
-              </div>
+        <Reveal delay={120}>
+          <div className="compare-wrap">
+            <div className="table-scroll">
+              <table className="compare-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Generic chatbot</th>
+                    <th className="col-us">production-rag</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {COMPARE_ROWS.map(([what, them, us]) => (
+                    <tr key={what}>
+                      <td className="compare-what">{what}</td>
+                      <td>{them}</td>
+                      <td className="col-us">{us}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </Reveal>
-          <Reveal delay={100}>
-            <div className="usecase-card">
-              <span className="blob blob-yellow" />
-              <span className="emoji">👩‍💻</span>
-              <div>
-                <h3>Developers</h3>
-                <p>Query API docs and internal wikis without the tab hunt.</p>
-              </div>
-            </div>
-          </Reveal>
-          <Reveal delay={160}>
-            <div className="usecase-card">
-              <span className="blob blob-purple" />
-              <span className="emoji">🏢</span>
-              <div>
-                <h3>Teams</h3>
-                <p>One knowledge base every teammate can trust and verify.</p>
-              </div>
-            </div>
-          </Reveal>
-          <Reveal delay={220}>
-            <div className="usecase-card">
-              <span className="blob blob-blue" />
-              <span className="emoji">🎓</span>
-              <div>
-                <h3>Students</h3>
-                <p>Turn lecture slides and textbooks into a cited study buddy.</p>
-              </div>
-            </div>
-          </Reveal>
-        </div>
+          </div>
+        </Reveal>
       </section>
 
-      {/* ================= DIFFERENT ================= */}
-      <section className="block container" id="different">
+      {/* ================= DEPLOY + ROADMAP ================= */}
+      <section className="section container" id="deploy">
         <Reveal>
           <div className="section-head">
-            <h2>
-              What Makes
-              <br />
-              production-rag Different
-            </h2>
-            <p>RAG shouldn&apos;t feel like a slot machine.</p>
+            <span className="kicker">deploy</span>
+            <h2>Runs where you run.</h2>
+            <p>
+              Embedded vector store for zero-friction local work, the same
+              codebase against a Qdrant server in production.
+            </p>
           </div>
         </Reveal>
-        <Reveal delay={100}>
-          <div className="diff-cta">
-            <Link href="/ask" className="btn-primary">
-              Try for Free
-            </Link>
+        <Reveal delay={120}>
+          <div className="deploy-grid">
+            <div className="deploy-card">
+              <span className="deploy-tag">local development</span>
+              <h3>Embedded mode</h3>
+              <p>
+                Qdrant runs embedded inside the API process. Zero
+                infrastructure — data stays on your machine.
+              </p>
+              <div className="deploy-cmd">
+                <span className="prompt">$</span>uvicorn
+                backend.app.main:app --reload
+              </div>
+            </div>
+            <div className="deploy-card">
+              <span className="deploy-tag">production shape</span>
+              <h3>Server mode</h3>
+              <p>
+                Docker Compose runs Qdrant as a server next to the API — the
+                production topology, one command away.
+              </p>
+              <div className="deploy-cmd">
+                <span className="prompt">$</span>docker compose up --build
+              </div>
+            </div>
+          </div>
+          <div className="roadmap">
+            <span className="roadmap-kicker">on the roadmap</span>
+            <div className="roadmap-items">
+              <span>
+                hybrid search<em>bm25 + dense</em>
+              </span>
+              <span>neural reranking</span>
+              <span>retrieval eval harness</span>
+            </div>
+            <span className="roadmap-note">
+              the eval harness will generate its own questions, answer them,
+              and score retrieval quality — a RAG system that grades itself.
+            </span>
           </div>
         </Reveal>
-        <div className="diff-grid">
-          <Reveal>
-            <div className="diff-card">
-              <div className="diff-icon"><IconCompass /></div>
-              <h3>Built to understand</h3>
-              <p>
-                The splitter, retries, dedup, and grounding are written from
-                scratch — no black boxes.
-              </p>
-            </div>
-          </Reveal>
-          <Reveal delay={100}>
-            <div className="diff-card">
-              <div className="diff-icon"><IconRocket /></div>
-              <h3>Focused on real grounding</h3>
-              <p>
-                No vibes-based answers — just retrieval, citations, and honest
-                refusals.
-              </p>
-            </div>
-          </Reveal>
-          <Reveal delay={160}>
-            <div className="diff-card">
-              <div className="diff-icon"><IconLock /></div>
-              <h3>Your data, your control</h3>
-              <p>
-                Local Qdrant, your own API keys, delete anytime. Nothing leaves
-                your stack but embeddings.
-              </p>
-            </div>
-          </Reveal>
-          <Reveal delay={220}>
-            <div className="diff-card">
-              <div className="diff-icon"><IconSpark /></div>
-              <h3>Tested like production</h3>
-              <p>
-                142 offline tests across every stage — deterministic, no paid
-                APIs required.
-              </p>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ================= ROADMAP ================= */}
-      <section className="block container" id="roadmap">
-        <Reveal>
-          <div className="section-head">
-            <h2>What&apos;s coming next</h2>
-          </div>
-        </Reveal>
-        <div className="roadmap-grid">
-          <Reveal>
-            <div className="roadmap-card">
-              <div className="diff-icon"><IconPuzzle /></div>
-              <h3>Hybrid search (BM25 + vectors)</h3>
-            </div>
-          </Reveal>
-          <Reveal delay={120}>
-            <div className="roadmap-card">
-              <div className="diff-icon"><IconSpark /></div>
-              <h3>Neural reranking</h3>
-            </div>
-          </Reveal>
-          <Reveal delay={240}>
-            <div className="roadmap-card">
-              <div className="diff-icon"><IconCompass /></div>
-              <h3>Retrieval evaluation harness</h3>
-            </div>
-          </Reveal>
-        </div>
       </section>
 
       {/* ================= FINAL CTA ================= */}
-      <section className="container final-cta" id="start">
-        <Reveal>
-          <h2>Your knowledge base is already waiting. Start asking.</h2>
-          <p className="sub">
-            Free tiers, no credit card, grounded answers in under a minute.
-          </p>
-          <Link href="/ask" className="btn-primary">
-            Ask your first question
-          </Link>
-        </Reveal>
-        <Reveal delay={200}>
-          <div className="final-mockup">
-            <AppMockup />
-          </div>
-        </Reveal>
+      <section className="cta-band">
+        <div className="cta-inner">
+          <Reveal>
+            <h2>Index your first document in under a minute.</h2>
+            <p>Free-tier API keys, no credit card. Ask a question, check the citations.</p>
+            <div className="cta-actions">
+              <Link href="/playground" className="btn btn-primary">
+                Open the playground
+              </Link>
+              <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-dark-ghost"
+              >
+                Browse the source
+              </a>
+            </div>
+          </Reveal>
+        </div>
       </section>
     </>
   );
