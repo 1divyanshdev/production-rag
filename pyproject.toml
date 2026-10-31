@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "production-rag"
+version = "0.1.0"
+description = "Production-ready RAG library with document ingestion, chunking, embedding, and grounded answer generation"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Production RAG Contributors"}
+]
+keywords = ["rag", "retrieval", "embeddings", "llm", "document-processing", "vector-search"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+# Core dependencies for the library (no FastAPI)
+dependencies = [
+    "pymupdf>=1.23.0",
+    "pydantic>=2.0.0",
+    "httpx>=0.27.0",
+    "qdrant-client>=1.10.0",
+]
+
+[project.optional-dependencies]
+# FastAPI backend dependencies
+api = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "python-multipart>=0.0.9",
+    "python-dotenv>=1.0.0",
+]
+
+# Development dependencies
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "ruff>=0.1.0",
+]
+
+# All optional dependencies
+all = [
+    "production-rag[api,dev]",
+]
+
+[project.urls]
+Homepage = "https://github.com/1divyanshdev/production-rag"
+Repository = "https://github.com/1divyanshdev/production-rag"
+Issues = "https://github.com/1divyanshdev/production-rag/issues"
+
+[tool.setuptools.packages.find]
+include = ["rag_core*"]
+exclude = ["tests*", "backend*", "frontend*", "scripts*"]
+
+[tool.setuptools.package-data]
+rag_core = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "W", "I", "N"]
+ignore = ["E501"]
+
+[tool.coverage.run]
+source = ["rag_core"]
+omit = ["*/tests/*", "*/__pycache__/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
