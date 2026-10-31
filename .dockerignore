@@ -1,0 +1,24 @@
+# VCS
+.git
+.gitignore
+
+# Python noise
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Secrets - NEVER in the image
+.env
+
+# Local state
+qdrant_storage/
+sample_doc.pdf
+*.pdf
+
+# Tooling
+.idea/
+.vscode/
