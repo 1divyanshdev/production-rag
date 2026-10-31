@@ -2,10 +2,10 @@ import logging
 
 import pytest
 
-from backend.app.models.document import Document, DocumentMetadata
-from backend.app.services.chunking_service import ChunkingService
-from backend.app.services.ingestion_service import DocumentIngestionService
-from backend.app.services.text_splitter import RecursiveTextSplitter
+from rag_core.models.document import Document, DocumentMetadata
+from rag_core.chunking import ChunkingService
+from rag_core.ingestion.ingestion_service import DocumentIngestionService
+from rag_core.chunking.text_splitter import RecursiveTextSplitter
 
 
 def make_document(

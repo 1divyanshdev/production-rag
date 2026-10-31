@@ -13,23 +13,20 @@ import logging
 from dataclasses import dataclass
 from typing import Optional
 
-from backend.app.core.config import (
+from rag_core.chunking import ChunkingService
+from rag_core.config import (
     load_embedding_settings,
     load_llm_settings,
     load_retrieval_settings,
     load_vector_store_settings,
 )
-from backend.app.core.exceptions import LLMError
-from backend.app.services.chunking_service import ChunkingService
-from backend.app.services.embeddings.base import EmbeddingProvider
-from backend.app.services.embeddings.factory import get_embedding_provider
-from backend.app.services.generation_service import GenerationService
-from backend.app.services.ingestion_pipeline import IngestionPipeline
-from backend.app.services.ingestion_service import DocumentIngestionService
-from backend.app.services.llm.base import LLMProvider
-from backend.app.services.llm.openai_compat import OpenAICompatibleLLMProvider
-from backend.app.services.retrieval_service import RetrievalService
-from backend.app.services.vector_store import QdrantVectorStore
+from rag_core.embeddings import EmbeddingProvider, get_embedding_provider
+from rag_core.generation import GenerationService
+from rag_core.ingestion import IngestionPipeline
+from rag_core.ingestion.ingestion_service import DocumentIngestionService
+from rag_core.llm import LLMProvider, OpenAICompatibleLLMProvider
+from rag_core.retrieval import RetrievalService
+from rag_core.vector_stores import QdrantVectorStore
 
 logger = logging.getLogger(__name__)
 

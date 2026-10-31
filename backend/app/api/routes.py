@@ -14,7 +14,7 @@ from backend.app.api.schemas import (
     SourceCitation,
     StatsResponse,
 )
-from backend.app.core.exceptions import LLMError
+from rag_core.exceptions import LLMError
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api", tags=["rag"])

@@ -1,6 +1,6 @@
 import pytest
 
-from backend.app.services.text_splitter import RecursiveTextSplitter
+from rag_core.chunking.text_splitter import RecursiveTextSplitter
 
 
 def build_paragraphic_text(paragraph_count, words_per_paragraph=30):

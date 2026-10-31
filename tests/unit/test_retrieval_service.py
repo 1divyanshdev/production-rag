@@ -1,12 +1,12 @@
 """Offline tests for the retrieval service."""
 import pytest
 
-from backend.app.core.config import RetrievalSettings
-from backend.app.core.exceptions import VectorStoreError
-from backend.app.services.chunking_service import ChunkingService
-from backend.app.services.ingestion_pipeline import IngestionPipeline
-from backend.app.services.ingestion_service import DocumentIngestionService
-from backend.app.services.retrieval_service import RetrievalService
+from rag_core.config import RetrievalSettings
+from rag_core.exceptions import VectorStoreError
+from rag_core.chunking import ChunkingService
+from rag_core.ingestion import IngestionPipeline
+from rag_core.ingestion.ingestion_service import DocumentIngestionService
+from rag_core.retrieval import RetrievalService
 
 
 @pytest.fixture
@@ -76,7 +76,7 @@ class TestRetrieve:
         store.search = store.search  # sanity
         retrieval = RetrievalService(fake_embedder, store)
 
-        from backend.app.services.vector_store import QdrantVectorStore
+        from rag_core.vector_stores.qdrant_store import QdrantVectorStore
 
         original = store.search
 

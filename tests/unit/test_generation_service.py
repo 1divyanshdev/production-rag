@@ -1,16 +1,16 @@
 """Offline tests for the generation service (grounded RAG answers)."""
 import pytest
 
-from backend.app.core.config import RetrievalSettings
-from backend.app.services.chunking_service import ChunkingService
-from backend.app.services.generation_service import (
+from rag_core.config import RetrievalSettings
+from rag_core.chunking import ChunkingService
+from rag_core.generation.generation_service import (
     REFUSAL_ANSWER,
     GenerationService,
     GeneratedAnswer,
 )
-from backend.app.services.ingestion_pipeline import IngestionPipeline
-from backend.app.services.ingestion_service import DocumentIngestionService
-from backend.app.services.retrieval_service import RetrievalService
+from rag_core.ingestion import IngestionPipeline
+from rag_core.ingestion.ingestion_service import DocumentIngestionService
+from rag_core.retrieval import RetrievalService
 
 
 def _pdf_bytes(text):

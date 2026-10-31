@@ -28,6 +28,11 @@ class JinaEmbeddingProvider:
         transport: Any = None,
         dimension: int | None = None,
     ):
+        if not settings.api_key:
+            raise EmbeddingError(
+                "EMBEDDING_API_KEY is not set. Add it to your environment "
+                "or .env file (see .env.example)."
+            )
         self.settings = settings
         self.base_url = "https://api.jina.ai/v1/embeddings"
         self._dimension = dimension

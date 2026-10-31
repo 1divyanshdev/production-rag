@@ -1,10 +1,10 @@
 """Offline tests for the Qdrant vector store (local :memory: mode)."""
 import pytest
 
-from backend.app.core.config import VectorStoreSettings
-from backend.app.core.exceptions import VectorStoreError
-from backend.app.models.chunk import Chunk, ChunkMetadata
-from backend.app.services.vector_store import QdrantVectorStore
+from rag_core.config import VectorStoreSettings
+from rag_core.exceptions import VectorStoreError
+from rag_core.models.chunk import Chunk, ChunkMetadata
+from rag_core.vector_stores.qdrant_store import QdrantVectorStore
 
 
 def make_chunk(content, page_number=1, document_id="doc-1", chunk_index=0,

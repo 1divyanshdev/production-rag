@@ -7,7 +7,7 @@ No network, no API key needed – everything is driven by
 import os
 import pytest
 
-from backend.app.core.config import EmbeddingSettings, load_embedding_settings
+from rag_core.config import EmbeddingSettings, load_embedding_settings
 
 
 class TestEmbeddingSettings:

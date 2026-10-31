@@ -1,9 +1,9 @@
 """Offline tests for the ingestion -> chunk -> embed -> index pipeline."""
 import pytest
 
-from backend.app.services.chunking_service import ChunkingService
-from backend.app.services.ingestion_pipeline import IngestionPipeline
-from backend.app.services.ingestion_service import DocumentIngestionService
+from rag_core.chunking import ChunkingService
+from rag_core.ingestion import IngestionPipeline
+from rag_core.ingestion.ingestion_service import DocumentIngestionService
 
 
 @pytest.fixture
@@ -49,7 +49,7 @@ class TestIndexing:
         assert memory_store.count() == first.indexed_chunks
 
     def test_invalid_pdf_propagates_error(self, pipeline):
-        from backend.app.core.exceptions import PDFParseError
+        from rag_core.exceptions import PDFParseError
 
         with pytest.raises(PDFParseError):
             pipeline.index_pdf(b"not a pdf", filename="bad.pdf")
@@ -57,7 +57,7 @@ class TestIndexing:
 
 class TestIndexedContentIsSearchable:
     def test_indexed_document_is_retrievable(self, pipeline, make_pdf_bytes, fake_embedder):
-        from backend.app.services.retrieval_service import RetrievalService
+        from rag_core.retrieval import RetrievalService
 
         data = make_pdf_bytes(["Qdrant stores chunk embeddings for retrieval."])
         pipeline.index_pdf(data, filename="kb.pdf")

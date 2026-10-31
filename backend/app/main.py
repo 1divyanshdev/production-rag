@@ -15,7 +15,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.api.routes import router
-from backend.app.core.exceptions import (
+from rag_core.exceptions import (
     EmbeddingError,
     LLMError,
     NoTextExtractedError,

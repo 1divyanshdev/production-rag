@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from pydantic import ValidationError
 
-from backend.app.models.document import Document, DocumentMetadata
+from rag_core.models.document import Document, DocumentMetadata
 
 REQUIRED_FIELDS = [
     "document_id",

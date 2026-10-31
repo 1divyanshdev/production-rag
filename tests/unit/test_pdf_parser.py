@@ -1,7 +1,7 @@
 import pytest
 
-from backend.app.core.exceptions import PDFParseError
-from backend.app.services.pdf_parser import PDFParser
+from rag_core.exceptions import PDFParseError
+from rag_core.ingestion.pdf_parser import PDFParser
 
 PAGE_TEXTS = [
     "Alpha page: retrieval augmented generation",

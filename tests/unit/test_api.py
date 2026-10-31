@@ -5,11 +5,11 @@ from fastapi.testclient import TestClient
 from backend.app.api.deps import Services, get_services
 from backend.app.api.routes import router
 from backend.app.main import create_app
-from backend.app.services.chunking_service import ChunkingService
-from backend.app.services.generation_service import GenerationService
-from backend.app.services.ingestion_pipeline import IngestionPipeline
-from backend.app.services.ingestion_service import DocumentIngestionService
-from backend.app.services.retrieval_service import RetrievalService
+from rag_core.chunking import ChunkingService
+from rag_core.generation.generation_service import GenerationService
+from rag_core.ingestion import IngestionPipeline
+from rag_core.ingestion.ingestion_service import DocumentIngestionService
+from rag_core.retrieval import RetrievalService
 
 
 @pytest.fixture

@@ -2,9 +2,9 @@
 import httpx
 import pytest
 
-from backend.app.core.config import LLMSettings
-from backend.app.core.exceptions import LLMError
-from backend.app.services.llm.openai_compat import OpenAICompatibleLLMProvider
+from rag_core.config import LLMSettings
+from rag_core.exceptions import LLMError
+from rag_core.llm.openai_compat import OpenAICompatibleLLMProvider
 
 
 def _settings(**overrides):

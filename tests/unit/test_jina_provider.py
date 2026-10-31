@@ -8,10 +8,10 @@ import pytest
 import httpx
 from typing import Any
 
-from backend.app.core.config import EmbeddingSettings
-from backend.app.core.exceptions import EmbeddingError
-from backend.app.services.embeddings.base import EmbeddingProvider
-from backend.app.services.embeddings.factory import get_embedding_provider
+from rag_core.config import EmbeddingSettings
+from rag_core.exceptions import EmbeddingError
+from rag_core.embeddings.base import EmbeddingProvider
+from rag_core.embeddings.factory import get_embedding_provider
 
 
 def _mock_handler(req):
@@ -98,10 +98,9 @@ class TestEmbedQuery:
 
 
 class TestErrors:
-    def test_missing_key_raises(self):
-        provider = _make_provider(api_key="")
-        with pytest.raises(EmbeddingError):
-            provider.embed_documents(["test"])
+    def test_missing_key_raises_at_construction(self):
+        with pytest.raises(EmbeddingError, match="EMBEDDING_API_KEY"):
+            _make_provider(api_key="")
 
     def test_malformed_response_shape_raises(self):
         transport = httpx.MockTransport(

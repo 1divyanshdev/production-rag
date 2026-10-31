@@ -3,9 +3,9 @@ import logging
 
 import pytest
 
-from backend.app.core.exceptions import NoTextExtractedError, PDFParseError
-from backend.app.models.document import Document
-from backend.app.services.ingestion_service import DocumentIngestionService
+from rag_core.exceptions import NoTextExtractedError, PDFParseError
+from rag_core.models.document import Document
+from rag_core.ingestion.ingestion_service import DocumentIngestionService
 
 
 @pytest.fixture
