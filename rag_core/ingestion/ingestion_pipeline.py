@@ -65,13 +65,30 @@ class IngestionPipeline:
         custom_metadata: Optional[dict] = None,
         force_reindex: bool = False,
     ) -> IndexingResult:
-        """Ingest, chunk, embed and store a PDF.
+        """
+        Ingest, chunk, embed and store a PDF document.
+
+        Complete indexing pipeline: parses the PDF, extracts text by page,
+        chunks the content, generates embeddings, and stores vectors in Qdrant.
+        Automatically skips duplicate files based on SHA-256 hash unless
+        force_reindex is True.
+
+        Args:
+            file_source: Path to PDF file (str) or raw bytes.
+            filename: Name of the file (required if file_source is bytes).
+            custom_metadata: Optional dict of metadata to attach to chunks.
+            force_reindex: If True, reindex even if document was already indexed.
+
+        Returns:
+            IndexingResult with filename, chunk count, and skip status.
 
         Raises:
-            FileNotFoundError, ValueError: invalid input (from ingestion).
-            PDFParseError / NoTextExtractedError: unusable PDF content.
-            EmbeddingError: embedding provider failure.
-            VectorStoreError: storage failure.
+            FileNotFoundError: If path-based source does not exist.
+            ValueError: If inputs are invalid (e.g., bytes without filename).
+            PDFParseError: If PDF cannot be parsed (corrupt or encrypted).
+            NoTextExtractedError: If PDF has no extractable text.
+            EmbeddingError: If embedding provider fails.
+            VectorStoreError: If storage operation fails.
         """
         documents = self.ingestion.ingest_pdf(
             file_source, filename=filename, custom_metadata=custom_metadata

@@ -45,7 +45,14 @@ class EmbeddingSettings:
 
 
 def load_embedding_settings() -> EmbeddingSettings:
-    """Convenience wrapper that returns a settings instance from process env."""
+    """
+    Load embedding settings from environment variables.
+
+    Convenience wrapper that returns a configured EmbeddingSettings instance.
+
+    Returns:
+        EmbeddingSettings with values from environment or defaults.
+    """
     return EmbeddingSettings()
 
 
@@ -78,6 +85,12 @@ class VectorStoreSettings:
 
 
 def load_vector_store_settings() -> VectorStoreSettings:
+    """
+    Load vector store settings from environment variables.
+
+    Returns:
+        VectorStoreSettings with values from environment or defaults.
+    """
     return VectorStoreSettings()
 
 
@@ -111,6 +124,12 @@ class LLMSettings:
 
 
 def load_llm_settings() -> LLMSettings:
+    """
+    Load LLM settings from environment variables.
+
+    Returns:
+        LLMSettings with values from environment or defaults.
+    """
     return LLMSettings()
 
 
@@ -129,4 +148,10 @@ class RetrievalSettings:
 
 
 def load_retrieval_settings() -> RetrievalSettings:
+    """
+    Load retrieval settings from environment variables.
+
+    Returns:
+        RetrievalSettings with values from environment or defaults.
+    """
     return RetrievalSettings()

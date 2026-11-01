@@ -76,7 +76,26 @@ class GenerationService:
         extra_filters: Optional[dict] = None,
         top_k: Optional[int] = None,
     ) -> GeneratedAnswer:
-        """Answer a question from the indexed corpus."""
+        """
+        Answer a question from the indexed corpus with grounded citations.
+
+        Performs retrieval-augmented generation: retrieves relevant chunks,
+        checks confidence, and generates an answer using the LLM. If the best
+        retrieval score is below the configured threshold, refuses to answer
+        rather than risking hallucination.
+
+        Args:
+            question: The question to answer.
+            document_id: Optional document ID to restrict retrieval.
+            extra_filters: Optional metadata filters for retrieval.
+            top_k: Number of chunks to retrieve (overrides config default).
+
+        Returns:
+            GeneratedAnswer with the answer text, sources, and refusal flag.
+
+        Raises:
+            LLMError: If answer generation fails.
+        """
         hits: List[ScoredChunk] = self.retrieval.retrieve(
             question,
             document_id=document_id,

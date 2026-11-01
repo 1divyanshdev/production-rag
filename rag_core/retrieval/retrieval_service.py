@@ -35,11 +35,26 @@ class RetrievalService:
         extra_filters: Optional[dict] = None,
         top_k: Optional[int] = None,
     ) -> list:
-        """Return up to top_k scored chunks for the question.
+        """
+        Retrieve the most relevant chunks for a question.
+
+        Embeds the question and performs semantic vector search over the
+        indexed chunks. Results are ranked by cosine similarity and can be
+        filtered by document ID or custom metadata.
+
+        Args:
+            question: The question text to search for.
+            document_id: Optional document ID to restrict search.
+            extra_filters: Optional metadata filters (dict of key-value pairs).
+            top_k: Maximum number of results (overrides config default).
+
+        Returns:
+            List of ScoredChunk objects ordered by relevance (highest first).
 
         Raises:
-            ValueError: empty question.
-            EmbeddingError / VectorStoreError: provider or store failure.
+            ValueError: If question is empty.
+            EmbeddingError: If embedding the question fails.
+            VectorStoreError: If vector search fails.
         """
         if not question or not question.strip():
             raise ValueError("Question must be a non-empty string.")
