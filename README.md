@@ -1,5 +1,9 @@
 # production-rag
 
+[![Tests](https://github.com/1divyanshdev/production-rag/actions/workflows/test.yml/badge.svg)](https://github.com/1divyanshdev/production-rag/actions/workflows/test.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A production-oriented, full-stack **RAG (Retrieval-Augmented Generation) platform** — not a "chat with PDF" demo. Upload documents, index them through a transparent pipeline, ask questions, and get grounded answers with page-level citations and honest refusals when the corpus can't support an answer.
 
 **Two ways to use this project:**
