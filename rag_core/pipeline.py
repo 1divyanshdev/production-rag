@@ -5,9 +5,17 @@ This module provides the high-level interface for using Production RAG as a libr
 External applications should primarily interact with RAGPipeline and RAGConfig.
 """
 import logging
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Union
+
+# Auto-load .env file if present
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed, rely on environment variables
 
 from rag_core.chunking import ChunkingService
 from rag_core.config import (
