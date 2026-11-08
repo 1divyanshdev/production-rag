@@ -71,12 +71,12 @@ class TestLLMSettingsLibrary:
         settings = LLMSettings(
             api_key="llm-key",
             base_url="https://api.groq.com/openai/v1",
-            model="llama-3.1-8b-instant",
+            model="openai/gpt-oss-20b",
         )
         
         assert settings.api_key == "llm-key"
         assert settings.base_url == "https://api.groq.com/openai/v1"
-        assert settings.model == "llama-3.1-8b-instant"
+        assert settings.model == "openai/gpt-oss-20b"
 
     def test_generation_parameters(self):
         """Settings should support generation parameters."""

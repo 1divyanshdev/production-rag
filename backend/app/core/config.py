@@ -94,7 +94,7 @@ class LLMSettings:
     #: Base URL of the OpenAI-compatible API, e.g. https://api.groq.com/openai/v1
     base_url: str = field(default_factory=lambda: os.getenv("LLM_BASE_URL", ""))
 
-    #: Chat model name, e.g. llama-3.1-8b-instant (Groq, free tier).
+    #: Chat model name, e.g. openai/gpt-oss-20b (Groq, free tier).
     model: str = field(default_factory=lambda: os.getenv("LLM_MODEL", ""))
 
     temperature: float = field(
