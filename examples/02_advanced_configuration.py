@@ -43,7 +43,7 @@ def example_local_vector_store():
         llm_settings=LLMSettings(
             api_key="your-llm-key",
             base_url="https://api.groq.com/openai/v1",
-            model="llama-3.1-8b-instant",
+            model="openai/gpt-oss-20b",
             temperature=0.1,
             max_tokens=1024,
         ),
@@ -138,7 +138,7 @@ def example_different_llm_providers():
     providers = {
         "Groq (Free)": {
             "base_url": "https://api.groq.com/openai/v1",
-            "models": ["llama-3.1-8b-instant", "llama-3.1-70b-versatile"],
+            "models": ["openai/gpt-oss-20b", "openai/gpt-oss-120b"],
             "signup": "https://console.groq.com",
         },
         "OpenRouter": {

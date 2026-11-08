@@ -42,39 +42,43 @@ uv pip install -e path/to/production-rag
 
 ```python
 from rag_core import RAGPipeline, RAGConfig
+from rag_core import EmbeddingSettings, LLMSettings
+from dotenv import load_dotenv
 
-# Configure the pipeline
+# Load environment variables
+load_dotenv()
+
+# Or configure explicitly
+from rag_core.config import EmbeddingSettings, LLMSettings
+
 config = RAGConfig(
-    embedding_provider="jina",
-    embedding_api_key="your-jina-key",
-    llm_provider="openai-compat",
-    llm_api_key="your-llm-key",
-    llm_base_url="https://api.groq.com/openai/v1",
-    llm_model="llama-3.1-8b-instant"
+    embedding_settings=EmbeddingSettings(
+        api_key="your-jina-key",
+        provider="jina"
+    ),
+    llm_settings=LLMSettings(
+        api_key="your-llm-key",
+        base_url="https://api.groq.com/openai/v1",
+        model="openai/gpt-oss-20b"  # Free tier model
+    )
 )
 
-# Initialize (providers are lazy-loaded)
+# Initialize
 pipeline = RAGPipeline(config)
 
 # Index a document
-doc = pipeline.index_document(
-    file_path="./paper.pdf",
-    title="Research Paper"
-)
-print(f"Indexed {doc.num_chunks} chunks from {doc.title}")
+result = pipeline.index_document("paper.pdf")
+print(f"Indexed {result.indexed_chunks} chunks from {result.filename}")
 
 # Ask questions
-result = pipeline.query(
-    question="What are the key findings?",
-    top_k=5
-)
+answer = pipeline.query("What are the key findings?", top_k=5)
 
-if result.refused:
-    print(f"Cannot answer: {result.answer}")
+if answer.refused:
+    print(f"Cannot answer: {answer.answer}")
 else:
-    print(f"Answer: {result.answer}")
-    for source in result.sources:
-        print(f"  [{source.citation_index}] {source.document_title} (page {source.page_number})")
+    print(f"Answer: {answer.answer}")
+    for i, source in enumerate(answer.sources, 1):
+        print(f"  [{i}] {source['filename']} (page {source['page_number']})")
 ```
 
 ### Features
@@ -242,7 +246,7 @@ Copy-Item .env.example .env    # then fill in your keys (see below)
 | Key | Where | Used by |
 |---|---|---|
 | `EMBEDDING_API_KEY` | [jina.ai](https://jina.ai) → API Key | `/api/documents` (indexing) |
-| `LLM_API_KEY` + `LLM_BASE_URL` + `LLM_MODEL` | e.g. [console.groq.com](https://console.groq.com) (`https://api.groq.com/openai/v1`, `llama-3.1-8b-instant`) | `/api/ask` |
+| `LLM_API_KEY` + `LLM_BASE_URL` + `LLM_MODEL` | e.g. [console.groq.com](https://console.groq.com) (`https://api.groq.com/openai/v1`, `openai/gpt-oss-20b`) | `/api/ask` |
 
 Keys live in `.env` (gitignored) — never in code, tests, or logs. **The API works partially configured:** uploading needs only the embedding key; the LLM stack is built lazily on first question.
 

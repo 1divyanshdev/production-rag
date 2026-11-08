@@ -24,7 +24,7 @@ Before running these examples, make sure you have:
    EMBEDDING_API_KEY=your-jina-api-key
    LLM_API_KEY=your-llm-api-key
    LLM_BASE_URL=https://api.groq.com/openai/v1
-   LLM_MODEL=llama-3.1-8b-instant
+   LLM_MODEL=openai/gpt-oss-20b
    ```
 
 ## Examples Overview
@@ -185,7 +185,7 @@ config = RAGConfig(
     llm_settings=LLMSettings(
         api_key="your-key",
         base_url="https://api.groq.com/openai/v1",
-        model="llama-3.1-8b-instant",
+        model="openai/gpt-oss-20b",
     ),
     retrieval_settings=RetrievalSettings(
         top_k=7,

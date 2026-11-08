@@ -459,7 +459,7 @@ EMBEDDING_API_KEY=jina_xxx
 # Required for query (LLM)
 LLM_API_KEY=gsk_xxx
 LLM_BASE_URL=https://api.groq.com/openai/v1
-LLM_MODEL=llama-3.1-8b-instant
+LLM_MODEL=openai/gpt-oss-20b
 
 # Optional LLM customization
 # LLM_TEMPERATURE=0.1
@@ -721,7 +721,7 @@ class VectorStoreSettings:
 class LLMSettings:
     api_key: str = ""
     base_url: str = ""                  # e.g., https://api.groq.com/openai/v1
-    model: str = ""                     # e.g., llama-3.1-8b-instant
+    model: str = ""                     # e.g., openai/gpt-oss-20b
     temperature: float = 0.1
     max_tokens: int = 1024
     timeout_seconds: int = 60
@@ -2392,7 +2392,7 @@ config = RAGConfig(
 # Set all LLM variables
 export LLM_API_KEY=your_key
 export LLM_BASE_URL=https://api.groq.com/openai/v1
-export LLM_MODEL=llama-3.1-8b-instant
+export LLM_MODEL=openai/gpt-oss-20b
 
 # Or skip queries, just index
 rag.index_document("doc.pdf")  # Works without LLM
