@@ -1,167 +1,221 @@
 # Contributing to Production RAG
 
-Thank you for your interest in contributing to Production RAG! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to Production RAG! This document provides guidelines and instructions for contributing.
+
+## Code of Conduct
+
+By participating in this project, you agree to maintain a respectful and inclusive environment for everyone.
 
 ## How to Contribute
 
-### Reporting Issues
+### Reporting Bugs
 
-- Use GitHub Issues to report bugs or request features
-- Search existing issues before creating a new one
-- Provide clear descriptions with steps to reproduce bugs
-- Include your environment details (OS, Python version, etc.)
+Before creating a bug report:
+1. Check the [existing issues](https://github.com/1divyanshdev/production-rag/issues)
+2. Verify the bug exists in the latest version
 
-### Development Setup
+When reporting, include:
+- Clear description of the issue
+- Steps to reproduce
+- Expected vs actual behavior
+- Environment details (OS, Python version, package version)
+- Relevant code snippets or error messages
 
-1. **Fork and clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/production-rag.git
-   cd production-rag
-   ```
+### Suggesting Enhancements
 
-2. **Create a virtual environment**
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # or .venv\Scripts\activate on Windows
-   ```
+Enhancement suggestions are welcome! Please:
+1. Check if it's already been suggested
+2. Provide a clear use case
+3. Explain why this would be useful to most users
 
-3. **Install dependencies**
-   ```bash
-   pip install -e ".[dev]"  # Installs library + dev tools
-   ```
+### Pull Requests
 
-4. **Run tests**
-   ```bash
-   pytest -v
-   ```
+#### Setup Development Environment
 
-### Making Changes
+```bash
+# Clone the repository
+git clone https://github.com/1divyanshdev/production-rag.git
+cd production-rag
 
-1. **Create a feature branch**
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Install pre-commit hooks (if available)
+pre-commit install
+```
+
+#### Development Workflow
+
+1. **Fork and Branch**
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
-2. **Make your changes**
-   - Follow the existing code style
+2. **Make Changes**
+   - Write clear, documented code
+   - Follow existing code style
    - Add tests for new features
-   - Update documentation as needed
+   - Update documentation
 
-3. **Run tests and linting**
+3. **Test Your Changes**
    ```bash
-   pytest -v
-   black .
-   ruff check .
+   # Run tests
+   pytest
+   
+   # Run specific test file
+   pytest tests/unit/test_your_feature.py
+   
+   # Check coverage
+   pytest --cov=rag_core
    ```
 
-4. **Commit your changes**
+4. **Commit**
    ```bash
    git add .
    git commit -m "feat: add your feature description"
    ```
+   
+   Use conventional commit messages:
+   - `feat:` new feature
+   - `fix:` bug fix
+   - `docs:` documentation changes
+   - `test:` adding tests
+   - `refactor:` code refactoring
+   - `chore:` maintenance tasks
 
-5. **Push and create a pull request**
+5. **Push and Create PR**
    ```bash
    git push origin feature/your-feature-name
    ```
+   
+   Then create a Pull Request on GitHub with:
+   - Clear title and description
+   - Reference related issues
+   - Screenshots (if UI changes)
+   - Test results
 
-### Commit Message Convention
+#### Code Style
 
-We follow conventional commits:
+- Follow PEP 8 guidelines
+- Use type hints
+- Write docstrings for public APIs
+- Keep functions focused and small
+- Use meaningful variable names
 
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `docs:` - Documentation changes
-- `test:` - Test changes
-- `refactor:` - Code refactoring
-- `chore:` - Maintenance tasks
+Example:
+```python
+from typing import List, Optional
 
-Examples:
-- `feat: add support for DOCX files`
-- `fix: handle empty PDF pages correctly`
-- `docs: update installation instructions`
-
-### Code Style
-
-- **Python**: Follow PEP 8, use Black for formatting
-- **Line length**: 100 characters (configured in pyproject.toml)
-- **Type hints**: Use type hints for all public functions
-- **Docstrings**: Use Google-style docstrings
-
-### Testing Guidelines
-
-- Write tests for all new features
-- Maintain or improve test coverage
-- Use offline fakes (no real API calls in tests)
-- Tests should be deterministic and fast
-
-### Project Structure
-
-```
-production-rag/
-├── rag_core/          # Reusable library (no FastAPI)
-│   ├── models/        # Data models
-│   ├── ingestion/     # PDF parsing, chunking
-│   ├── embeddings/    # Embedding providers
-│   ├── vector_stores/ # Vector storage
-│   ├── retrieval/     # Semantic search
-│   └── generation/    # Answer generation
-├── backend/           # FastAPI web application
-├── frontend/          # Next.js UI
-├── tests/             # Test suite
-│   ├── library/       # Library API tests
-│   └── unit/          # Component tests
-└── examples/          # Usage examples
+def process_documents(
+    documents: List[str],
+    chunk_size: int = 512,
+    overlap: Optional[int] = None
+) -> List[dict]:
+    """
+    Process documents into chunks.
+    
+    Args:
+        documents: List of document texts to process
+        chunk_size: Maximum size of each chunk in characters
+        overlap: Optional overlap between chunks
+        
+    Returns:
+        List of processed document chunks with metadata
+        
+    Raises:
+        ValueError: If chunk_size is less than 1
+    """
+    if chunk_size < 1:
+        raise ValueError("chunk_size must be positive")
+    
+    # Implementation
+    pass
 ```
 
-### Adding New Features
+#### Testing Guidelines
 
-#### Adding a New Embedding Provider
+- Write tests for new features
+- Maintain existing test coverage
+- Use pytest fixtures for setup
+- Mock external dependencies
+- Test edge cases and error conditions
 
-1. Create a new file in `rag_core/embeddings/`
-2. Implement the `EmbeddingProvider` interface
-3. Register in `factory.py`
-4. Add tests in `tests/unit/`
-5. Update documentation
+Example test:
+```python
+import pytest
+from rag_core import RAGPipeline
 
-#### Adding a New Document Format
+def test_pipeline_initialization():
+    """Test that pipeline initializes with valid config."""
+    pipeline = RAGPipeline(
+        embedding_model="test-model",
+        vector_store_url="http://localhost:6333"
+    )
+    assert pipeline is not None
+    assert pipeline.embedding_model == "test-model"
 
-1. Create a parser in `rag_core/ingestion/`
-2. Update `ingestion_service.py` to handle the format
-3. Add test fixtures and tests
-4. Update README with supported formats
+def test_pipeline_invalid_config():
+    """Test that pipeline raises error with invalid config."""
+    with pytest.raises(ValueError):
+        RAGPipeline(embedding_model="")
+```
 
-### Documentation
+#### Documentation
 
-- Update README.md for user-facing changes
-- Update PYTHON_LIBRARY_GUIDE.md for library changes
-- Add docstrings to all public functions
-- Create examples for new features
+Update documentation when:
+- Adding new features
+- Changing APIs
+- Fixing bugs that affect usage
+- Adding examples
 
-### Pull Request Process
+Documentation files:
+- `README.md` - Overview and quick start
+- `docs/PYTHON_LIBRARY_GUIDE.md` - Comprehensive library guide
+- `docs/PUBLISHING.md` - Publishing guidelines
+- Docstrings in code
 
-1. Ensure all tests pass
-2. Update documentation
-3. Keep PRs focused (one feature/fix per PR)
-4. Reference related issues
-5. Wait for review and address feedback
+### Areas for Contribution
 
-### Getting Help
+We especially welcome contributions in:
 
-- Open an issue for questions
-- Check existing documentation
-- Review closed issues and PRs
+1. **Embedding Providers**
+   - Add support for Cohere, Anthropic, Hugging Face
+   - Location: `rag_core/services/embeddings/`
 
-## Code of Conduct
+2. **Vector Stores**
+   - Add Pinecone, Weaviate, ChromaDB support
+   - Location: `rag_core/services/vector_store.py`
 
-- Be respectful and inclusive
-- Focus on constructive feedback
-- Help others learn and grow
+3. **Document Parsers**
+   - Support for DOCX, HTML, Markdown
+   - Location: `rag_core/services/parsers/`
+
+4. **Chunking Strategies**
+   - Advanced semantic chunking
+   - Context-aware splitting
+   - Location: `rag_core/services/chunking_service.py`
+
+5. **Testing**
+   - Integration tests
+   - Performance benchmarks
+   - Location: `tests/`
+
+6. **Documentation**
+   - Usage examples
+   - Tutorials
+   - API reference
+   - Location: `docs/`
+
+## Questions?
+
+- Open a [GitHub Discussion](https://github.com/1divyanshdev/production-rag/discussions)
+- Join our community (if applicable)
+- Email: divyansh.freelances@gmail.com
 
 ## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
-
----
-
-Thank you for contributing to Production RAG! 🚀
