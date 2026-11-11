@@ -1999,180 +1999,75 @@ except LLMError:
 
 ---
 
-## 11. Library-to-FastAPI Integration
+## 11. Integrating rag_core into Your Own Application
 
-### How the Backend Uses the Library
+`rag_core` is a plain Python library — integrate it the same way you would any package.
 
-The FastAPI application imports and uses `rag_core` exactly like any external application would.
+### Web framework (FastAPI / Flask / Django)
 
-**Key file:** `backend/app/api/deps.py`
-
-```python
-from rag_core.chunking import ChunkingService
-from rag_core.config import load_embedding_settings, load_llm_settings, ...
-from rag_core.embeddings import get_embedding_provider
-from rag_core.generation import GenerationService
-from rag_core.ingestion import IngestionPipeline
-from rag_core.ingestion.ingestion_service import DocumentIngestionService
-from rag_core.llm import OpenAICompatibleLLMProvider
-from rag_core.retrieval import RetrievalService
-from rag_core.vector_stores import QdrantVectorStore
-
-def build_services_from_settings() -> Services:
-    """Construct the RAG stack from environment configuration."""
-    embedder = get_embedding_provider(load_embedding_settings())
-    store = QdrantVectorStore(load_vector_store_settings(), dimension=embedder.dimension)
-    
-    pipeline = IngestionPipeline(
-        ingestion=DocumentIngestionService(),
-        chunker=ChunkingService(),
-        embedder=embedder,
-        store=store,
-    )
-    
-    retrieval = RetrievalService(embedder, store, load_retrieval_settings())
-    
-    return Services(
-        embedder=embedder,
-        store=store,
-        pipeline=pipeline,
-        retrieval=retrieval,
-        # LLM lazy-initialized
-    )
-```
-
-**Why not use RAGPipeline?**
-The backend constructs components directly for more control over dependency injection. A RAGPipeline-based version would also work:
+Read the file bytes from the HTTP request, pass them to the pipeline, return the result. The library handles all RAG logic; your framework handles HTTP concerns.
 
 ```python
-def get_services_simple() -> Services:
-    config = RAGConfig()
-    rag = RAGPipeline(config=config)
-    
-    return Services(
-        pipeline=rag.ingestion_pipeline,
-        retrieval=rag.retrieval_service,
-        generation=rag.generation_service,
-        store=rag.vector_store,
-    )
-```
+# FastAPI example
+from fastapi import FastAPI, UploadFile
+from rag_core import RAGPipeline
 
-### API Route Integration
+app = FastAPI()
+pipeline = RAGPipeline()   # loads keys from environment
 
-**Example: Document upload endpoint**
-
-```python
-@router.post("/documents", response_model=IndexResponse)
-async def upload_document(file: UploadFile, services: Services = Depends(get_services)):
-    # 1. HTTP-specific validation
-    if not file.filename.endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF supported")
-    
-    # 2. Read file bytes
+@app.post("/documents")
+async def upload(file: UploadFile):
     content = await file.read()
-    
-    # 3. Call library (same as any Python application)
-    result = services.pipeline.index_pdf(content, filename=file.filename)
-    
-    # 4. Convert to HTTP response
-    return IndexResponse(
-        filename=result.filename,
-        indexed_chunks=result.indexed_chunks,
-        skipped_duplicate=result.skipped_duplicate,
-        document_id=result.document_id,
-    )
+    result = pipeline.index_document(content, filename=file.filename)
+    return {"indexed_chunks": result.indexed_chunks, "document_id": result.document_id}
+
+@app.post("/ask")
+async def ask(question: str):
+    answer = pipeline.query(question)
+    return {"answer": answer.answer, "refused": answer.refused, "sources": answer.sources}
 ```
 
-**What belongs where:**
+**Exception → HTTP status mapping:**
 
-| Concern | Layer |
-|---------|-------|
-| HTTP request parsing | FastAPI |
-| File size limits | FastAPI |
-| Multipart handling | FastAPI |
-| PDF parsing | rag_core |
-| Chunking | rag_core |
-| Embedding | rag_core |
-| Vector storage | rag_core |
-| HTTP response formatting | FastAPI |
-| HTTP status codes | FastAPI |
+| Exception | Recommended HTTP status |
+|---|---|
+| `PDFParseError` | 400 |
+| `NoTextExtractedError` | 422 |
+| `EmbeddingError` | 502 |
+| `LLMError` | 502 |
+| `VectorStoreError` | 500 |
 
-### Exception Translation
-
-**Library exceptions → HTTP status codes**
+### CLI tool
 
 ```python
-# In backend/app/main.py
+import sys
+from rag_core import RAGPipeline
 
-@app.exception_handler(PDFParseError)
-def _pdf_parse_error(request, exc):
-    raise HTTPException(status_code=400, detail=str(exc))
+pipeline = RAGPipeline()
 
-@app.exception_handler(NoTextExtractedError)
-def _no_text_error(request, exc):
-    raise HTTPException(status_code=422, detail=str(exc))
+if sys.argv[1] == "index":
+    result = pipeline.index_document(sys.argv[2])
+    print(f"Indexed {result.indexed_chunks} chunks from {result.filename}")
 
-@app.exception_handler(EmbeddingError)
-def _embedding_error(request, exc):
-    raise HTTPException(status_code=502, detail=f"Embedding failed: {exc}")
-
-@app.exception_handler(LLMError)
-def _llm_error(request, exc):
-    raise HTTPException(status_code=502, detail=f"LLM failed: {exc}")
-
-@app.exception_handler(VectorStoreError)
-def _vector_store_error(request, exc):
-    raise HTTPException(status_code=500, detail=f"Storage error: {exc}")
+elif sys.argv[1] == "ask":
+    answer = pipeline.query(" ".join(sys.argv[2:]))
+    print(answer.answer)
+    if not answer.refused:
+        for src in answer.sources:
+            print(f"  [{src['index']}] {src['filename']} p.{src['page_number']}")
 ```
 
-**Mapping rationale:**
-- 400 (Bad Request): Client error (invalid PDF)
-- 422 (Unprocessable): Valid format but can't process (no text)
-- 502 (Bad Gateway): External service failed (embedding, LLM)
-- 500 (Internal Server Error): Infrastructure failed (vector store)
-
-### Request/Response Schemas
-
-**Backend schemas are separate from library models:**
+### Jupyter notebook
 
 ```python
-# backend/app/api/schemas.py
-
-class AskRequest(BaseModel):
-    question: str
-    document_id: Optional[str] = None
-    top_k: Optional[int] = None
-
-class AskResponse(BaseModel):
-    question: str
-    answer: str
-    sources: List[SourceCitation]
-    refused: bool
+from rag_core import RAGPipeline
+pipeline = RAGPipeline()
+result  = pipeline.index_document("paper.pdf")
+answer  = pipeline.query("What is the main contribution?")
+print(answer.answer)
 ```
 
-**Why separate schemas?**
-- HTTP API contract is stable and versioned
-- Library internal models can evolve
-- API can add HTTP-specific fields (request IDs, timestamps)
-
-### Deployment Considerations
-
-**Running the backend:**
-```bash
-# Development
-uvicorn backend.app.main:app --reload
-
-# Production
-gunicorn backend.app.main:app -w 4 -k uvicorn.workers.UvicornWorker
-```
-
-**Environment:**
-- Needs same environment variables as standalone library use
-- Plus any FastAPI-specific config (CORS, etc.)
-
-**Shared vs. Independent:**
-- Backend and library share: Qdrant collection, same documents
-- Backend-specific: HTTP logging, rate limiting, authentication
+The library is synchronous and has no event-loop requirements.
 
 ---
 
@@ -2186,19 +2081,20 @@ tests/
 │   ├── test_public_api.py     # RAGPipeline, RAGConfig, etc.
 │   └── test_configuration.py  # Settings classes
 ├── unit/                      # INTERNAL COMPONENT TESTS
-│   ├── test_api.py            # FastAPI endpoints
 │   ├── test_chunking_service.py
 │   ├── test_ingestion_pipeline.py
 │   ├── test_vector_store.py
-│   └── ... (9 test files total)
+│   ├── test_anthropic_provider.py
+│   ├── test_gemini_provider.py
+│   └── ... (13 test files total)
 └── conftest.py                # Shared fixtures
 ```
 
 ### Test Coverage
 
-**Total:** 177 tests
+**Total:** 209 tests
 - **Library tests:** 35 tests
-- **Unit tests:** 142 tests
+- **Unit tests:** 174 tests
 
 **By component:**
 - Public API: 24 tests
@@ -2206,12 +2102,14 @@ tests/
 - Ingestion: 16 tests
 - Chunking: 10 tests
 - Embeddings: 16 tests
-- LLM: 10 tests
+- LLM (OpenAI-compat): 7 tests
+- LLM (Anthropic): 10 tests
+- LLM (Gemini): 11 tests
+- LLM factory: 5 tests
 - Vector store: 24 tests
 - Retrieval: 6 tests
 - Generation: 6 tests
 - Text splitting: 18 tests
-- FastAPI routes: 14 tests
 - Models: 10 tests
 
 ### Key Test Strategies
