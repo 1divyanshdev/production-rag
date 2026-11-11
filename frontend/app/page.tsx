@@ -67,7 +67,7 @@ const FEATURES = [
   {
     glyph: "✓",
     title: "Tested offline",
-    desc: "177 deterministic tests across comprehensive suites, with mocked HTTP transports. No test ever calls a paid API.",
+    desc: "209 deterministic tests across comprehensive suites, with mocked HTTP transports. No test ever calls a paid API.",
   },
 ];
 
@@ -90,7 +90,7 @@ const COMPARE_ROWS: [string, string, string][] = [
   [
     "quality control",
     "Trust it",
-    "177 offline tests · eval harness on the roadmap",
+    "209 offline tests · eval harness on the roadmap",
   ],
 ];
 
@@ -278,7 +278,7 @@ export default function LandingPage() {
           </div>
           <div className="hero-stats">
             <span className="stat-chip">
-              <b>177</b> offline tests
+              <b>209</b> offline tests
             </span>
             <span className="stat-chip">
               <b>comprehensive</b> test coverage
@@ -309,8 +309,7 @@ export default function LandingPage() {
           >
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: "28px", fontWeight: "bold", color: "#1d4ed8", marginBottom: "4px" }}>
-                177
-              </div>
+                209              </div>
               <div style={{ fontSize: "14px", color: "#6B7280" }}>
                 Comprehensive Tests
               </div>
@@ -325,7 +324,7 @@ export default function LandingPage() {
             </div>
             <div style={{ textAlign: "center" }}>
               <div style={{ fontSize: "28px", fontWeight: "bold", color: "#1d4ed8", marginBottom: "4px" }}>
-                0.1.0
+                0.1.1
               </div>
               <div style={{ fontSize: "14px", color: "#6B7280" }}>
                 Published on PyPI

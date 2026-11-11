@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { Inter, JetBrains_Mono } from "next/font/google";
-import { API_DOCS_URL, GITHUB_URL } from "@/lib/site";
+import { GITHUB_URL } from "@/lib/site";
 import GitHubStars from "@/components/GitHubStars";
 import "./globals.css";
 
@@ -18,6 +18,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://production-rag.vercel.app"),
   title: "production-rag — RAG that shows its work",
   description:
     "Open-source retrieval-augmented generation with page-level citations, a transparent pipeline, and honest refusals.",
