@@ -135,6 +135,8 @@ class QdrantVectorStore:
     def document_exists(self, file_hash: str) -> bool:
         """True if any stored point carries this source file hash
         (ingestion-level deduplication)."""
+        if not self.client.collection_exists(self.settings.collection):
+            return False  # collection not yet created — no duplicate possible
         try:
             result = self.client.count(
                 collection_name=self.settings.collection,

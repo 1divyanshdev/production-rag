@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "prod-rag"
 version = "0.1.1"
-description = "Production-ready RAG library with document ingestion, chunking, embedding, and grounded answer generation"
+description = "Production-ready RAG library with document ingestion, chunking, embedding, and grounded answer generation. Install: pip install prod-rag · Import: from rag_core import RAGPipeline"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}

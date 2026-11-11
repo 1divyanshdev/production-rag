@@ -290,3 +290,31 @@ class RAGPipeline:
             "collection": self.vector_store.settings.collection,
             "total_chunks": self.vector_store.count(),
         }
+
+    def close(self) -> None:
+        """
+        Release resources held by the pipeline.
+
+        Closes the Qdrant client explicitly while Python's module system
+        is still intact, preventing the noisy ``ModuleNotFoundError``
+        traceback that ``QdrantClient.__del__`` can emit on interpreter
+        shutdown (a known upstream portalocker/qdrant-client issue on
+        Windows).
+
+        Call this when you are done with the pipeline, or use the
+        pipeline as a context manager instead::
+
+            with RAGPipeline(config=cfg) as rag:
+                rag.index_document("doc.pdf")
+                answer = rag.query("What is the main topic?")
+        """
+        try:
+            self.vector_store.client.close()
+        except Exception:
+            pass  # best-effort — never raise in cleanup
+
+    def __enter__(self) -> "RAGPipeline":
+        return self
+
+    def __exit__(self, *args) -> None:
+        self.close()
