@@ -18,7 +18,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://production-rag.vercel.app"),
+  metadataBase: new URL("https://production-rag-beige.vercel.app"),
   title: "production-rag — RAG that shows its work",
   description:
     "Open-source retrieval-augmented generation with page-level citations, a transparent pipeline, and honest refusals.",
