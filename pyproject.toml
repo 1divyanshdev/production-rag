@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prod-rag"
-version = "0.1.0"
+version = "0.1.1"
 description = "Production-ready RAG library with document ingestion, chunking, embedding, and grounded answer generation"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -34,25 +34,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# FastAPI backend dependencies
-api = [
-    "fastapi>=0.115.0",
-    "uvicorn[standard]>=0.30.0",
-    "python-multipart>=0.0.9",
-    "python-dotenv>=1.0.0",
-]
-
 # Development dependencies
 dev = [
     "pytest>=8.0",
     "pytest-cov>=4.0",
     "black>=23.0",
     "ruff>=0.1.0",
-]
-
-# All optional dependencies
-all = [
-    "prod-rag[api,dev]",
 ]
 
 [project.urls]
