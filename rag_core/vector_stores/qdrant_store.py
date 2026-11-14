@@ -35,9 +35,9 @@ logger = logging.getLogger(__name__)
 class QdrantVectorStore:
     """Chunk vector store with upsert, dedup-aware search, and filtering."""
 
-    def __init__(self, settings: VectorStoreSettings, dimension: int):
+    def __init__(self, settings: VectorStoreSettings, dimension: Optional[int] = None):
         self.settings = settings
-        self.dimension = dimension
+        self._dimension = dimension
         try:
             if settings.url:
                 self.client = QdrantClient(url=settings.url, api_key=settings.api_key or None)
@@ -45,7 +45,18 @@ class QdrantVectorStore:
                 self.client = QdrantClient(path=settings.path)
         except Exception as exc:
             raise VectorStoreError(f"Could not initialize Qdrant client: {exc}") from exc
-        self._ensure_collection()
+        # Only create the collection immediately when dimension is known.
+        # When dimension=None the collection is created lazily on first upsert.
+        if self._dimension is not None:
+            self._ensure_collection()
+
+    @property
+    def dimension(self) -> Optional[int]:
+        return self._dimension
+
+    @dimension.setter
+    def dimension(self, value: int) -> None:
+        self._dimension = value
 
     # -------- schema management --------
 
@@ -55,14 +66,14 @@ class QdrantVectorStore:
                 self.client.create_collection(
                     collection_name=self.settings.collection,
                     vectors_config=qmodels.VectorParams(
-                        size=self.dimension,
+                        size=self._dimension,
                         distance=qmodels.Distance.COSINE,
                     ),
                 )
                 logger.info(
                     "Created Qdrant collection '%s' (dim=%d, cosine).",
                     self.settings.collection,
-                    self.dimension,
+                    self._dimension,
                 )
         except Exception as exc:
             raise VectorStoreError(
@@ -92,11 +103,16 @@ class QdrantVectorStore:
         if not chunks:
             return 0
 
+        # Resolve dimension lazily on first upsert (avoids eager network probe).
+        if self._dimension is None:
+            self._dimension = len(vectors[0])
+            self._ensure_collection()
+
         for chunk, vector in zip(chunks, vectors):
-            if len(vector) != self.dimension:
+            if len(vector) != self._dimension:
                 raise VectorStoreError(
                     f"Vector dimension {len(vector)} != collection "
-                    f"dimension {self.dimension}. Re-embed with the "
+                    f"dimension {self._dimension}. Re-embed with the "
                     "configured model or recreate the collection."
                 )
 
@@ -151,9 +167,9 @@ class QdrantVectorStore:
         ``extra_filters`` matches exact payload values, e.g.
         {"metadata.extra.category": "contracts"}.
         """
-        if len(query_vector) != self.dimension:
+        if len(query_vector) != self._dimension:
             raise VectorStoreError(
-                f"Query vector dim {len(query_vector)} != {self.dimension}."
+                f"Query vector dim {len(query_vector)} != {self._dimension}."
             )
 
         must = []

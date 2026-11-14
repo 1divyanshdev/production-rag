@@ -66,15 +66,16 @@ class IngestionPipeline:
         force_reindex: bool = False,
     ) -> IndexingResult:
         """
-        Ingest, chunk, embed and store a PDF document.
+        Ingest, chunk, embed and store a document (PDF or plain-text .txt).
 
-        Complete indexing pipeline: parses the PDF, extracts text by page,
-        chunks the content, generates embeddings, and stores vectors in Qdrant.
+        Dispatches to the appropriate parser based on the file extension.
+        Complete indexing pipeline: parses the file, extracts text, chunks
+        the content, generates embeddings, and stores vectors in Qdrant.
         Automatically skips duplicate files based on SHA-256 hash unless
         force_reindex is True.
 
         Args:
-            file_source: Path to PDF file (str) or raw bytes.
+            file_source: Path to file (str/Path) or raw bytes.
             filename: Name of the file (required if file_source is bytes).
             custom_metadata: Optional dict of metadata to attach to chunks.
             force_reindex: If True, reindex even if document was already indexed.
@@ -84,13 +85,13 @@ class IngestionPipeline:
 
         Raises:
             FileNotFoundError: If path-based source does not exist.
-            ValueError: If inputs are invalid (e.g., bytes without filename).
+            ValueError: If inputs are invalid or file type is unsupported.
             PDFParseError: If PDF cannot be parsed (corrupt or encrypted).
-            NoTextExtractedError: If PDF has no extractable text.
+            NoTextExtractedError: If document has no extractable text.
             EmbeddingError: If embedding provider fails.
             VectorStoreError: If storage operation fails.
         """
-        documents = self.ingestion.ingest_pdf(
+        documents = self.ingestion.ingest_document(
             file_source, filename=filename, custom_metadata=custom_metadata
         )
         fname = documents[0].metadata.filename
@@ -116,3 +117,6 @@ class IngestionPipeline:
             skipped_duplicate=False,
             document_id=chunks[0].metadata.document_id,
         )
+
+    # Alias for forward-compatibility — preferred name going forward.
+    index_document = index_pdf

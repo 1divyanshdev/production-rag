@@ -32,7 +32,7 @@ from rag_core.embeddings import EmbeddingProvider, get_embedding_provider
 from rag_core.generation import GeneratedAnswer, GenerationService
 from rag_core.ingestion import IngestionPipeline, IndexingResult
 from rag_core.ingestion.ingestion_service import DocumentIngestionService
-from rag_core.llm import LLMProvider, OpenAICompatibleLLMProvider
+from rag_core.llm import LLMProvider, get_llm_provider
 from rag_core.retrieval import RetrievalService
 from rag_core.vector_stores import QdrantVectorStore
 
@@ -132,9 +132,11 @@ class RAGPipeline:
             self.config.embedding_settings
         )
 
-        # Initialize vector store
+        # Initialize vector store — dimension is resolved lazily on first
+        # upsert, so no network call to Jina happens during construction.
         self.vector_store = QdrantVectorStore(
-            self.config.vector_store_settings, dimension=self.embedder.dimension
+            self.config.vector_store_settings,
+            dimension=self.config.embedding_settings.dimension,
         )
 
         # Initialize ingestion pipeline
@@ -164,7 +166,7 @@ class RAGPipeline:
     def llm_provider(self) -> LLMProvider:
         """Lazy initialization of LLM provider."""
         if self._llm_provider is None:
-            self._llm_provider = OpenAICompatibleLLMProvider(self.config.llm_settings)
+            self._llm_provider = get_llm_provider(self.config.llm_settings)
         return self._llm_provider
 
     @property

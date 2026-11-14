@@ -15,10 +15,60 @@ class DocumentIngestionService:
     """
     Orchestration service for document ingestion.
     Coordinates file processing, hashing, metadata generation, and page extraction.
+    Supports PDF and plain-text (.txt) files.
     """
 
     def __init__(self):
         self.pdf_parser = PDFParser()
+
+    def ingest_document(
+        self,
+        file_source: Union[str, Path, bytes],
+        filename: Optional[str] = None,
+        custom_metadata: Optional[dict] = None,
+    ) -> List[Document]:
+        """
+        Ingest a document (PDF or plain-text .txt).
+
+        Dispatches to :meth:`ingest_pdf` or :meth:`ingest_text` based on
+        the file extension. When ``file_source`` is raw bytes the
+        ``filename`` parameter determines the type.
+
+        Args:
+            file_source: Path to file or raw bytes.
+            filename: Name of the file (required if file_source is bytes).
+            custom_metadata: Optional dict of custom metadata to attach.
+
+        Returns:
+            List[Document]: Extracted document pages/segments.
+
+        Raises:
+            FileNotFoundError: If path-based source does not exist.
+            ValueError: If inputs are missing or of the wrong type, or if
+                the file extension is unsupported.
+            PDFParseError: If a PDF cannot be parsed.
+            NoTextExtractedError: If no extractable text is found.
+        """
+        # Resolve the filename so we can check the extension.
+        if isinstance(file_source, (str, Path)):
+            resolved_name = filename or Path(file_source).name
+        elif isinstance(file_source, bytes):
+            if not filename:
+                raise ValueError("filename must be provided when file_source is raw bytes.")
+            resolved_name = filename
+        else:
+            raise ValueError("file_source must be a file path or raw bytes.")
+
+        ext = Path(resolved_name).suffix.lower()
+        if ext == ".txt":
+            return self.ingest_text(file_source, filename=filename, custom_metadata=custom_metadata)
+        if ext == ".pdf" or ext == "":
+            # Default to PDF for extensionless bytes (backward-compatible).
+            return self.ingest_pdf(file_source, filename=filename, custom_metadata=custom_metadata)
+
+        raise ValueError(
+            f"Unsupported file type '{ext}'. Supported types: .pdf, .txt"
+        )
 
     def ingest_pdf(
         self,
@@ -117,3 +167,75 @@ class DocumentIngestionService:
     def _compute_sha256(file_bytes: bytes) -> str:
         """Computes SHA-256 hash of binary content for tracking and deduplication."""
         return hashlib.sha256(file_bytes).hexdigest()
+
+    def ingest_text(
+        self,
+        file_source: Union[str, Path, bytes],
+        filename: Optional[str] = None,
+        custom_metadata: Optional[dict] = None,
+    ) -> List[Document]:
+        """
+        Ingest a plain-text (.txt) file as a single document.
+
+        Args:
+            file_source: Path to a .txt file or raw UTF-8 bytes.
+            filename: Name of the file (required if file_source is bytes).
+            custom_metadata: Optional dict of custom metadata to attach.
+
+        Returns:
+            List[Document]: A list with a single Document containing the
+            full text content.
+
+        Raises:
+            FileNotFoundError: If a path-based source does not exist.
+            ValueError: If inputs are missing or of the wrong type.
+            NoTextExtractedError: If the file is empty.
+        """
+        if isinstance(file_source, (str, Path)):
+            path = Path(file_source)
+            if not path.exists():
+                raise FileNotFoundError(f"File not found at path: {file_source}")
+            filename = filename or path.name
+            with open(path, "rb") as f:
+                file_bytes = f.read()
+        elif isinstance(file_source, bytes):
+            if not filename:
+                raise ValueError("filename must be provided when file_source is raw bytes.")
+            file_bytes = file_source
+        else:
+            raise ValueError("file_source must be a file path or raw bytes.")
+
+        file_size_bytes = len(file_bytes)
+        file_hash = self._compute_sha256(file_bytes)
+        document_id = str(uuid.uuid4())
+
+        # Decode as UTF-8, falling back to latin-1 for legacy files.
+        try:
+            text = file_bytes.decode("utf-8")
+        except UnicodeDecodeError:
+            text = file_bytes.decode("latin-1")
+
+        text = text.replace("\r\n", "\n").replace("\r", "\n").strip()
+
+        if not text:
+            raise NoTextExtractedError(
+                f"No extractable text in '{filename}'. The file appears to be empty."
+            )
+
+        metadata = DocumentMetadata(
+            document_id=document_id,
+            filename=filename,
+            file_type="txt",
+            file_hash=file_hash,
+            file_size_bytes=file_size_bytes,
+            page_number=1,
+            total_pages=1,
+            extra=custom_metadata or {},
+        )
+
+        logger.info(
+            "Ingested text file '%s' (%d bytes, sha256:%s).",
+            filename, file_size_bytes, file_hash[:12],
+        )
+
+        return [Document(page_content=text, metadata=metadata)]
