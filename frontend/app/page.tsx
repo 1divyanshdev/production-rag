@@ -233,9 +233,14 @@ export default function LandingPage() {
               transparent, testable pipeline from PDF to grounded answer.
             </p>
             <div className="hero-cta">
-              <Link href="/playground" className="btn btn-primary">
-                Open the playground
-              </Link>
+              <a
+                href="https://pypi.org/project/prod-rag/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary"
+              >
+                Install from PyPI
+              </a>
               <a
                 href={GITHUB_URL}
                 target="_blank"
@@ -257,20 +262,19 @@ export default function LandingPage() {
               lines={[
                 {
                   cmd: "pip install prod-rag",
-                  comment: "→ or clone from GitHub below",
+                  comment: "→ Install the library",
                 },
                 {
-                  cmd: "git clone https://github.com/1divyanshdev/production-rag",
-                },
-                {
-                  cmd: "cd production-rag && pip install -r requirements.txt",
-                },
-                {
-                  cmd: "uvicorn backend.app.main:app --reload",
-                  comment: "→ http://127.0.0.1:8000/docs",
+                  cmd: "python",
+                  comment: "→ Start Python REPL",
                 },
               ]}
             />
+            <div style={{ marginTop: "16px", padding: "16px", background: "rgba(20,23,28,0.03)", borderRadius: "8px", fontSize: "14px", fontFamily: "var(--font-jetbrains)" }}>
+              <div style={{ color: "#6B7280", marginBottom: "8px" }}># Then use it:</div>
+              <div style={{ color: "#14171c" }}>from rag_core import RAGPipeline</div>
+              <div style={{ color: "#14171c", marginTop: "4px" }}>pipeline = RAGPipeline(...)</div>
+            </div>
           </div>
           <div className="hero-stats">
             <span className="stat-chip">
@@ -285,6 +289,56 @@ export default function LandingPage() {
             <span className="stat-chip">
               <b>2</b> free-tier API keys to run
             </span>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ================= TRUST SIGNALS ================= */}
+      <section className="section container" style={{ paddingTop: 0 }}>
+        <Reveal>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "24px",
+              padding: "32px",
+              background: "rgba(29,78,216,0.03)",
+              borderRadius: "16px",
+              border: "1px solid rgba(29,78,216,0.1)",
+            }}
+          >
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: "28px", fontWeight: "bold", color: "#1d4ed8", marginBottom: "4px" }}>
+                177
+              </div>
+              <div style={{ fontSize: "14px", color: "#6B7280" }}>
+                Comprehensive Tests
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: "28px", fontWeight: "bold", color: "#1d4ed8", marginBottom: "4px" }}>
+                MIT
+              </div>
+              <div style={{ fontSize: "14px", color: "#6B7280" }}>
+                Open Source License
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: "28px", fontWeight: "bold", color: "#1d4ed8", marginBottom: "4px" }}>
+                0.1.0
+              </div>
+              <div style={{ fontSize: "14px", color: "#6B7280" }}>
+                Published on PyPI
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: "28px", fontWeight: "bold", color: "#1d4ed8", marginBottom: "4px" }}>
+                100%
+              </div>
+              <div style={{ fontSize: "14px", color: "#6B7280" }}>
+                Type-Safe Python
+              </div>
+            </div>
           </div>
         </Reveal>
       </section>
@@ -306,7 +360,13 @@ export default function LandingPage() {
           <EvidenceDemo />
           <p className="demo-caption">
             example session · recorded values ·{" "}
-            <Link href="/playground">run it live in the playground →</Link>
+            <a
+              href="https://github.com/1divyanshdev/production-rag/tree/main/examples"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              try it yourself on GitHub →
+            </a>
           </p>
         </Reveal>
       </section>
@@ -472,19 +532,19 @@ export default function LandingPage() {
       <section className="cta-band">
         <div className="cta-inner">
           <Reveal>
-            <h2>Index your first document in under a minute.</h2>
-            <p>Free-tier API keys, no credit card. Ask a question, check the citations.</p>
+            <h2>Start Building in 5 Minutes</h2>
+            <p>Install the package, add your API keys, and you're ready to go. Free tier available.</p>
             <div className="cta-actions">
-              <Link href="/playground" className="btn btn-primary">
-                Open the playground
+              <Link href="/get-started" className="btn btn-primary">
+                Get Started
               </Link>
               <a
-                href={GITHUB_URL}
+                href="https://pypi.org/project/prod-rag/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-dark-ghost"
               >
-                Browse the source
+                View on PyPI
               </a>
             </div>
           </Reveal>

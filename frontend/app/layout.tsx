@@ -78,8 +78,8 @@ export default function RootLayout({
             </Link>
             <nav>
               <Link href="/#pipeline">Pipeline</Link>
-              <Link href="/playground">Playground</Link>
-              <Link href="/console">Console</Link>
+              <Link href="/get-started">Get Started</Link>
+              <Link href="/#features">Features</Link>
               <a
                 href={GITHUB_URL}
                 target="_blank"
@@ -90,8 +90,8 @@ export default function RootLayout({
                 GitHub
                 <GitHubStars />
               </a>
-              <Link href="/playground" className="nav-cta">
-                Open playground
+              <Link href="/get-started" className="nav-cta">
+                Install Now
               </Link>
             </nav>
           </div>
@@ -112,11 +112,21 @@ export default function RootLayout({
               </p>
             </div>
             <div className="footer-col">
-              <h4>Product</h4>
-              <Link href="/playground">Playground</Link>
-              <Link href="/console">Console</Link>
-              <a href={API_DOCS_URL} target="_blank" rel="noopener noreferrer">
-                API reference
+              <h4>Get Started</h4>
+              <Link href="/get-started">Installation</Link>
+              <a
+                href="https://github.com/1divyanshdev/production-rag/blob/main/docs/PYTHON_LIBRARY_GUIDE.md"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Documentation
+              </a>
+              <a
+                href="https://pypi.org/project/prod-rag/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                PyPI Package
               </a>
             </div>
             <div className="footer-col">
