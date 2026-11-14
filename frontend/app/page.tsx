@@ -67,7 +67,7 @@ const FEATURES = [
   {
     glyph: "✓",
     title: "Tested offline",
-    desc: "142 deterministic tests across 9 suites, with mocked HTTP transports. No test ever calls a paid API.",
+    desc: "177 deterministic tests across comprehensive suites, with mocked HTTP transports. No test ever calls a paid API.",
   },
 ];
 
@@ -90,7 +90,7 @@ const COMPARE_ROWS: [string, string, string][] = [
   [
     "quality control",
     "Trust it",
-    "142 offline tests · eval harness on the roadmap",
+    "177 offline tests · eval harness on the roadmap",
   ],
 ];
 
@@ -256,10 +256,14 @@ export default function LandingPage() {
               title="quickstart"
               lines={[
                 {
+                  cmd: "pip install prod-rag",
+                  comment: "→ or clone from GitHub below",
+                },
+                {
                   cmd: "git clone https://github.com/1divyanshdev/production-rag",
                 },
                 {
-                  cmd: "cd production-rag && uv pip install -r requirements.txt",
+                  cmd: "cd production-rag && pip install -r requirements.txt",
                 },
                 {
                   cmd: "uvicorn backend.app.main:app --reload",
@@ -270,10 +274,10 @@ export default function LandingPage() {
           </div>
           <div className="hero-stats">
             <span className="stat-chip">
-              <b>142</b> offline tests
+              <b>177</b> offline tests
             </span>
             <span className="stat-chip">
-              <b>9</b> test suites
+              <b>comprehensive</b> test coverage
             </span>
             <span className="stat-chip">
               <b>0</b> paid APIs in CI
