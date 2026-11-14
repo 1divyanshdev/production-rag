@@ -1,5 +1,6 @@
 # production-rag
 
+[![PyPI version](https://img.shields.io/pypi/v/prod-rag.svg)](https://pypi.org/project/prod-rag/)
 [![Tests](https://github.com/1divyanshdev/production-rag/actions/workflows/test.yml/badge.svg)](https://github.com/1divyanshdev/production-rag/actions/workflows/test.yml)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -30,12 +31,12 @@ The `rag_core` package is a standalone, reusable Python library for building RAG
 
 ### Installation
 
-```powershell
-# Install from source (editable mode)
-uv pip install -e .
+```bash
+# Install from PyPI (recommended)
+pip install prod-rag
 
-# Or in your own project
-uv pip install -e path/to/production-rag
+# Or install from source (editable mode)
+pip install -e .
 ```
 
 ### Quick Start
