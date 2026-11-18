@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Reveal from "@/components/Reveal";
 import CopyCommand from "@/components/CopyCommand";
 
@@ -9,10 +8,10 @@ export default function GetStartedPage() {
     <div className="container">
       <div className="page-head">
         <span className="kicker">get started</span>
-        <h1>Install & Use in 5 Minutes</h1>
+        <h1>From pip to first answer in five minutes</h1>
         <p className="page-sub">
-          Production RAG is a Python library. Install it, bring your API keys,
-          and start building.
+          A Python library: install it, bring two free API keys, index a PDF,
+          ask a question.
         </p>
       </div>
 
@@ -22,17 +21,15 @@ export default function GetStartedPage() {
           <div className="section-head">
             <span className="kicker">installation</span>
             <h2>Install via pip</h2>
-            <p>Production RAG is published on PyPI. One command and you're ready.</p>
+            <p>One command. Python 3.11+, any OS.</p>
           </div>
         </Reveal>
         <Reveal delay={100}>
           <CopyCommand
             title="install"
-            lines={[
-              { cmd: "pip install prod-rag" },
-            ]}
+            lines={[{ cmd: "pip install prod-rag" }]}
           />
-          <p style={{ marginTop: "16px", color: "#6B7280", fontSize: "15px" }}>
+          <p className="gs-note">
             Requires Python 3.11+. Compatible with Windows, macOS, and Linux.
           </p>
         </Reveal>
@@ -43,34 +40,26 @@ export default function GetStartedPage() {
         <Reveal>
           <div className="section-head">
             <span className="kicker">api keys</span>
-            <h2>Get Your Free API Keys</h2>
+            <h2>Bring two free-tier keys</h2>
             <p>
-              Production RAG uses external services for embeddings and LLM. Both
-              offer generous free tiers — no credit card required.
+              Embeddings and generation both run on generous free tiers — no
+              credit card required.
             </p>
           </div>
         </Reveal>
         <Reveal delay={100}>
-          <div style={{ display: "grid", gap: "24px", marginTop: "32px" }}>
-            <div
-              style={{
-                padding: "24px",
-                border: "1px solid rgba(20,23,28,0.12)",
-                borderRadius: "12px",
-              }}
-            >
-              <h3 style={{ marginBottom: "8px" }}>
-                1. Jina AI (Embeddings)
-              </h3>
-              <p style={{ color: "#6B7280", marginBottom: "16px" }}>
+          <div className="gs-grid-2">
+            <div className="key-card">
+              <h3>1. Jina AI — embeddings</h3>
+              <p>
                 Converts text into vector representations for semantic search.
               </p>
-              <div style={{ display: "flex", gap: "12px", marginBottom: "12px" }}>
-                <span style={{ fontSize: "14px" }}>
-                  ✅ <strong>1M tokens/month</strong> free
+              <div className="key-perks">
+                <span className="key-perk">
+                  <b>1M tokens/month</b> free
                 </span>
-                <span style={{ fontSize: "14px" }}>
-                  ⚡ <strong>Fast</strong> inference
+                <span className="key-perk">
+                  <b>Fast</b> inference
                 </span>
               </div>
               <a
@@ -78,43 +67,25 @@ export default function GetStartedPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-ghost"
-                style={{ marginTop: "8px" }}
               >
-                Get Jina AI Key →
+                Get a Jina AI key →
               </a>
-              <div
-                style={{
-                  marginTop: "16px",
-                  padding: "12px",
-                  background: "rgba(20,23,28,0.03)",
-                  borderRadius: "6px",
-                  fontSize: "13px",
-                  fontFamily: "var(--font-jetbrains)",
-                }}
-              >
+              <div className="key-steps">
                 Sign up → Dashboard → API Keys → Create
               </div>
             </div>
 
-            <div
-              style={{
-                padding: "24px",
-                border: "1px solid rgba(20,23,28,0.12)",
-                borderRadius: "12px",
-              }}
-            >
-              <h3 style={{ marginBottom: "8px" }}>
-                2. Groq (LLM)
-              </h3>
-              <p style={{ color: "#6B7280", marginBottom: "16px" }}>
-                Generates answers from retrieved context with citations.
+            <div className="key-card">
+              <h3>2. Groq — generation</h3>
+              <p>
+                Generates answers from retrieved context, with citations.
               </p>
-              <div style={{ display: "flex", gap: "12px", marginBottom: "12px" }}>
-                <span style={{ fontSize: "14px" }}>
-                  ✅ <strong>30 req/min</strong> free
+              <div className="key-perks">
+                <span className="key-perk">
+                  <b>30 req/min</b> free
                 </span>
-                <span style={{ fontSize: "14px" }}>
-                  ⚡ <strong>Fastest</strong> LLM API
+                <span className="key-perk">
+                  <b>Fastest</b> LLM API
                 </span>
               </div>
               <a
@@ -122,20 +93,10 @@ export default function GetStartedPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-ghost"
-                style={{ marginTop: "8px" }}
               >
-                Get Groq Key →
+                Get a Groq key →
               </a>
-              <div
-                style={{
-                  marginTop: "16px",
-                  padding: "12px",
-                  background: "rgba(20,23,28,0.03)",
-                  borderRadius: "6px",
-                  fontSize: "13px",
-                  fontFamily: "var(--font-jetbrains)",
-                }}
-              >
+              <div className="key-steps">
                 Sign up → API Keys → Create new key
               </div>
             </div>
@@ -148,24 +109,13 @@ export default function GetStartedPage() {
         <Reveal>
           <div className="section-head">
             <span className="kicker">quick start</span>
-            <h2>Your First RAG Pipeline in 30 Seconds</h2>
-            <p>Index a document and ask questions. That's it.</p>
+            <h2>Your first pipeline in 30 seconds</h2>
+            <p>Index a document, ask a question. That’s the whole loop.</p>
           </div>
         </Reveal>
         <Reveal delay={100}>
-          <div
-            style={{
-              background: "#14171c",
-              color: "#fafaf7",
-              padding: "24px",
-              borderRadius: "12px",
-              fontFamily: "var(--font-jetbrains)",
-              fontSize: "14px",
-              lineHeight: "1.6",
-              overflow: "auto",
-            }}
-          >
-            <pre style={{ margin: 0 }}>
+          <div className="gs-codeblock">
+            <pre>
               <code>{`from rag_core import RAGPipeline
 from rag_core.config import EmbeddingSettings, LLMSettings
 
@@ -197,14 +147,14 @@ else:
         print(f"  [{src.filename}] page {src.page_number}")`}</code>
             </pre>
           </div>
-          <div style={{ marginTop: "16px", textAlign: "center" }}>
+          <div className="gs-center">
             <a
               href="https://github.com/1divyanshdev/production-rag/tree/main/examples"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary"
             >
-              View More Examples →
+              View more examples →
             </a>
           </div>
         </Reveal>
@@ -215,59 +165,37 @@ else:
         <Reveal>
           <div className="section-head">
             <span className="kicker">use cases</span>
-            <h2>What You Can Build</h2>
+            <h2>What you can build</h2>
           </div>
         </Reveal>
         <Reveal delay={100}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "24px", marginTop: "32px" }}>
+          <div className="uc-grid">
             {[
               {
-                title: "Research Assistant",
+                title: "Research assistant",
                 desc: "Index academic papers, ask questions, get cited answers with page references.",
                 code: "pipeline.query('What methodology did they use?')",
               },
               {
-                title: "Legal Document Search",
+                title: "Legal document search",
                 desc: "Search contracts and legal docs with semantic understanding, not just keywords.",
                 code: "pipeline.query('What are the termination clauses?')",
               },
               {
-                title: "Internal Knowledge Base",
+                title: "Internal knowledge base",
                 desc: "Company docs, wikis, and manuals — searchable and question-answerable.",
                 code: "pipeline.query('How do I deploy to production?')",
               },
               {
-                title: "Customer Support Bot",
+                title: "Customer support bot",
                 desc: "Answer customer questions from product documentation with real citations.",
                 code: "pipeline.query('How do I reset my password?')",
               },
             ].map((useCase) => (
-              <div
-                key={useCase.title}
-                style={{
-                  padding: "20px",
-                  border: "1px solid rgba(20,23,28,0.12)",
-                  borderRadius: "10px",
-                }}
-              >
-                <h3 style={{ fontSize: "18px", marginBottom: "8px" }}>
-                  {useCase.title}
-                </h3>
-                <p style={{ color: "#6B7280", fontSize: "14px", marginBottom: "12px" }}>
-                  {useCase.desc}
-                </p>
-                <code
-                  style={{
-                    display: "block",
-                    padding: "8px 12px",
-                    background: "rgba(20,23,28,0.05)",
-                    borderRadius: "6px",
-                    fontSize: "12px",
-                    fontFamily: "var(--font-jetbrains)",
-                  }}
-                >
-                  {useCase.code}
-                </code>
+              <div key={useCase.title} className="uc-card">
+                <h3>{useCase.title}</h3>
+                <p>{useCase.desc}</p>
+                <code className="uc-code">{useCase.code}</code>
               </div>
             ))}
           </div>
@@ -279,177 +207,63 @@ else:
         <Reveal>
           <div className="section-head">
             <span className="kicker">next steps</span>
-            <h2>Dive Deeper</h2>
+            <h2>Dive deeper</h2>
           </div>
         </Reveal>
         <Reveal delay={100}>
-          <div style={{ display: "grid", gap: "16px", marginTop: "32px" }}>
+          <div className="next-list">
             <a
               href="https://github.com/1divyanshdev/production-rag/blob/main/docs/PYTHON_LIBRARY_GUIDE.md"
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                padding: "20px 24px",
-                border: "1px solid rgba(20,23,28,0.12)",
-                borderRadius: "10px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                textDecoration: "none",
-                color: "inherit",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#1d4ed8";
-                e.currentTarget.style.background = "rgba(29,78,216,0.03)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(20,23,28,0.12)";
-                e.currentTarget.style.background = "transparent";
-              }}
+              className="next-link"
             >
               <div>
-                <h3 style={{ fontSize: "18px", marginBottom: "4px" }}>
-                  📖 Python Library Guide
-                </h3>
-                <p style={{ color: "#6B7280", fontSize: "14px", margin: 0 }}>
-                  Comprehensive 600+ line guide covering architecture, configuration, and patterns
+                <h3>Python library guide</h3>
+                <p>
+                  Comprehensive guide covering architecture, configuration, and
+                  usage patterns.
                 </p>
               </div>
-              <span style={{ fontSize: "24px", color: "#1d4ed8" }}>→</span>
+              <span className="next-arrow" aria-hidden>→</span>
             </a>
 
             <a
               href="https://github.com/1divyanshdev/production-rag/tree/main/examples"
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                padding: "20px 24px",
-                border: "1px solid rgba(20,23,28,0.12)",
-                borderRadius: "10px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                textDecoration: "none",
-                color: "inherit",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#1d4ed8";
-                e.currentTarget.style.background = "rgba(29,78,216,0.03)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(20,23,28,0.12)";
-                e.currentTarget.style.background = "transparent";
-              }}
+              className="next-link"
             >
               <div>
-                <h3 style={{ fontSize: "18px", marginBottom: "4px" }}>
-                  💻 Code Examples
-                </h3>
-                <p style={{ color: "#6B7280", fontSize: "14px", margin: 0 }}>
-                  5 runnable examples from basic usage to advanced patterns
+                <h3>Code examples</h3>
+                <p>
+                  Five runnable examples, from basic usage to advanced
+                  patterns.
                 </p>
               </div>
-              <span style={{ fontSize: "24px", color: "#1d4ed8" }}>→</span>
+              <span className="next-arrow" aria-hidden>→</span>
             </a>
 
             <a
               href="https://github.com/1divyanshdev/production-rag"
               target="_blank"
               rel="noopener noreferrer"
-              style={{
-                padding: "20px 24px",
-                border: "1px solid rgba(20,23,28,0.12)",
-                borderRadius: "10px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                textDecoration: "none",
-                color: "inherit",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#1d4ed8";
-                e.currentTarget.style.background = "rgba(29,78,216,0.03)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(20,23,28,0.12)";
-                e.currentTarget.style.background = "transparent";
-              }}
+              className="next-link"
             >
               <div>
-                <h3 style={{ fontSize: "18px", marginBottom: "4px" }}>
-                  🔬 View Source Code
-                </h3>
-                <p style={{ color: "#6B7280", fontSize: "14px", margin: 0 }}>
-                  Explore the codebase, run tests, and contribute on GitHub
+                <h3>Source code</h3>
+                <p>
+                  Explore the codebase, run the test suites, and contribute on
+                  GitHub.
                 </p>
               </div>
-              <span style={{ fontSize: "24px", color: "#1d4ed8" }}>→</span>
+              <span className="next-arrow" aria-hidden>→</span>
             </a>
           </div>
         </Reveal>
       </section>
 
-      {/* Trust Indicators */}
-      <section className="section">
-        <Reveal>
-          <div
-            style={{
-              background: "rgba(29,78,216,0.05)",
-              border: "1px solid rgba(29,78,216,0.2)",
-              borderRadius: "12px",
-              padding: "32px",
-              textAlign: "center",
-            }}
-          >
-            <h2 style={{ marginBottom: "16px" }}>Battle-Tested & Production-Ready</h2>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                gap: "48px",
-                flexWrap: "wrap",
-                marginTop: "24px",
-              }}
-            >
-              <div>
-                <div style={{ fontSize: "32px", fontWeight: "bold", color: "#1d4ed8" }}>
-                  209
-                </div>
-                <div style={{ color: "#6B7280", fontSize: "14px" }}>
-                  Tests Passing
-                </div>
-              </div>
-              <div>
-                <div style={{ fontSize: "32px", fontWeight: "bold", color: "#1d4ed8" }}>
-                  0
-                </div>
-                <div style={{ color: "#6B7280", fontSize: "14px" }}>
-                  Known Bugs
-                </div>
-              </div>
-              <div>
-                <div style={{ fontSize: "32px", fontWeight: "bold", color: "#1d4ed8" }}>
-                  MIT
-                </div>
-                <div style={{ color: "#6B7280", fontSize: "14px" }}>
-                  Open Source
-                </div>
-              </div>
-              <div>
-                <div style={{ fontSize: "32px", fontWeight: "bold", color: "#1d4ed8" }}>
-                  100%
-                </div>
-                <div style={{ color: "#6B7280", fontSize: "14px" }}>
-                  Type Safe
-                </div>
-              </div>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <div style={{ height: "48px" }} />
     </div>
   );
 }
