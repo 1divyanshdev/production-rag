@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FAFAF7",
+  themeColor: "#ffffff",
 };
 
 function LogoMark({ size = 26 }: { size?: number }) {
@@ -34,7 +34,7 @@ function LogoMark({ size = 26 }: { size?: number }) {
       <svg
         viewBox="0 0 24 24"
         fill="none"
-        stroke="#fafaf7"
+        stroke="#ffffff"
         strokeWidth="2.2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -62,15 +62,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrains.variable}`}>
       <body>
-        <div className="banner">
-          <div className="banner-inner">
-            <span className="banner-tag">on the roadmap</span>
-            a retrieval eval harness that grades itself —{" "}
-            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-              follow the build on GitHub →
-            </a>
-          </div>
-        </div>
         <header className="site-header">
           <div className="header-inner">
             <Link href="/" className="brand" aria-label="production-rag home">
@@ -78,8 +69,6 @@ export default function RootLayout({
               <span className="brand-name">production-rag</span>
             </Link>
             <nav>
-              <Link href="/#pipeline">Pipeline</Link>
-              <Link href="/get-started">Get Started</Link>
               <Link href="/#features">Features</Link>
               <a
                 href={GITHUB_URL}
@@ -92,7 +81,7 @@ export default function RootLayout({
                 <GitHubStars />
               </a>
               <Link href="/get-started" className="nav-cta">
-                Install Now
+                Get started
               </Link>
             </nav>
           </div>
@@ -108,12 +97,12 @@ export default function RootLayout({
                 <span className="brand-name">production-rag</span>
               </Link>
               <p>
-                An open-source RAG pipeline with nothing to hide — every answer
+                Open-source retrieval-augmented generation — every answer
                 grounded in retrieved context, cited to real pages, or refused.
               </p>
             </div>
             <div className="footer-col">
-              <h4>Get Started</h4>
+              <h4>Get started</h4>
               <Link href="/get-started">Installation</Link>
               <a
                 href="https://github.com/1divyanshdev/production-rag/blob/main/docs/PYTHON_LIBRARY_GUIDE.md"
@@ -127,7 +116,7 @@ export default function RootLayout({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                PyPI Package
+                PyPI package
               </a>
             </div>
             <div className="footer-col">
@@ -159,10 +148,9 @@ export default function RootLayout({
           </div>
           <div className="footer-bottom">
             <span>
-              © {new Date().getFullYear()} production-rag — grounded in
-              retrieved context.
+              © {new Date().getFullYear()} production-rag — MIT licensed.
             </span>
-            <span>cited to real pages · or refused</span>
+            <span>grounded in retrieved context · or refused</span>
           </div>
         </footer>
       </body>
