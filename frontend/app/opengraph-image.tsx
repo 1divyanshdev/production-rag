@@ -33,7 +33,7 @@ export default function OpengraphImage() {
               display: "flex",
               fontSize: 24,
               letterSpacing: 6,
-              color: "#1D4ED8",
+              color: "#C53948",
               textTransform: "uppercase",
             }}
           >
@@ -157,7 +157,7 @@ export default function OpengraphImage() {
               style={{
                 color: "#8AB0FF",
                 border: "1px solid rgba(138,176,255,0.4)",
-                background: "rgba(29,78,216,0.18)",
+                background: "rgba(197,57,72,0.2)",
                 borderRadius: 6,
                 padding: "0 8px",
                 marginLeft: 8,
@@ -203,7 +203,7 @@ export default function OpengraphImage() {
                       display: "flex",
                       width: `${pct}%`,
                       height: 6,
-                      background: "#1D4ED8",
+                      background: "#C53948",
                     }}
                   />
                 </span>
